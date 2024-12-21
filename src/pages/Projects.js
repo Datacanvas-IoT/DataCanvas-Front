@@ -192,7 +192,7 @@ function Projects() {
   return (
     <NonSidebarLayout breadcrumb={''}>
       <div className={`container pt-10 xl:px-32`}>
-        <h1 className={`text-xl text-gray2 mx-5`}>Your DataCanvas Projects</h1>
+        <h1 className={`text-xl text-gray2 mx-5`}>Your AirSense Projects</h1>
         <div className={`flex-wrap flex justify-center mt-5 mb-48`}>
           <AddProjectCard />
           {projects.map((project) => (

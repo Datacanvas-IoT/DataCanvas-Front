@@ -97,12 +97,8 @@ function ForgotPassword() {
             alt="Logo"
             className=" w-40"
           />
-          <h1 className="text-4xl text-gray2 font-bold mt-4 font-poppins">
-            DataCanvas
-          </h1>
-          <h1 className="text-2xl text-gray1 mt-4 ">
-            IoT Data Manageement Platform
-          </h1>
+          <h1 className="text-4xl text-gray2 font-bold mt-4 font-poppins">AirSense</h1>
+          <h1 className="text-2xl text-gray1 mt-4 ">Air Quality, Simplified</h1>
         </div>
 
         {/* Right Side Section */}

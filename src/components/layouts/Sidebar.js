@@ -42,7 +42,7 @@ function Sidebar({ isSidebarOpen, active, toggleSidebar }) {
       <div className="flex justify-center items-center mt-5 cursor-pointer" onClick={() => { navigate('/overview', { state: { project_id: projectID } }) }}>
         {!isSidebarOpen ? '' : <FaWindowClose className="text-2xl text-green mr-3 visible lg:hidden" onClick={() => toggleSidebar()} />}
         <img src={process.env.PUBLIC_URL + '/img/logo.png'} alt="Logo" className=" w-8" />
-        <span className="text-xl text-gray2 font-bold font-poppins ml-2">DataCanvas</span>
+        <span className="text-xl text-gray2 font-bold font-poppins ml-2">AirSense</span>
       </div>
 
       <div className="mt-8 px-3">
