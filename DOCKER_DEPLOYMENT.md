@@ -10,7 +10,6 @@ This guide covers deploying DataCanvas-Front as a Docker container to GitHub Con
 - `.github/workflows/docker-publish.yml` - GitHub Actions workflow for automated builds
 
 ## Prerequisites
-
 ### 1. GitHub Repository Setup
 Ensure your repository is hosted on GitHub with the following structure:
 - Owner: `Datacanvas-IoT`
