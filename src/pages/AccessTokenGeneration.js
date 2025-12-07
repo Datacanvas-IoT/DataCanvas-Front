@@ -1,88 +1,213 @@
-import React, { useState } from 'react';
-import { FaKey } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaKey, FaPlusCircle, FaCopy, FaTrash } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import NonSidebarLayout from '../components/layouts/NonSidebarLayout';
-import TextBox from '../components/input/TextBox';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
+import Spinner from '../components/Spinner';
 
 const AccessTokenGeneration = () => {
-    const [tokenName, setTokenName] = useState('');
-    const [description, setDescription] = useState('');
+    const navigate = useNavigate();
+    const { state } = useLocation();
 
-    const handleTokenNameChange = (e) => {
-        setTokenName(e.target.value);
-    };
+    const [loading, setLoading] = useState(false);
+    const [projectID, setProjectID] = useState(-1);
+    const [projectName, setProjectName] = useState(localStorage.getItem('project'));
 
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
+    // Access tokens list
+    const [accessTokens, setAccessTokens] = useState([]);
 
-    const handleGenerateToken = () => {
-        if (!tokenName.trim()) {
-            toast.error('Token name is required');
+    // Get project_id from location state
+    useEffect(() => {
+        try {
+            if (state?.project_id) {
+                setProjectID(state.project_id);
+                localStorage.setItem('project_id', state.project_id);
+            } else {
+                const storedProjectId = localStorage.getItem('project_id');
+                if (storedProjectId) {
+                    setProjectID(parseInt(storedProjectId));
+                }
+            }
+        } catch (err) {
+            console.log(err);
+            navigate('/login');
+        }
+    }, []);
+
+    // Load access tokens when projectID changes
+    useEffect(() => {
+        if (projectID !== -1) {
+            loadAccessTokens();
+        }
+    }, [projectID]);
+
+    // API call for getting access tokens of the project
+    const loadAccessTokens = async () => {
+        const token = localStorage.getItem("auth-token");
+
+        if (!token) {
+            toast.error("Please login to continue!");
+            navigate('/login');
             return;
         }
-        // TODO: Implement token generation logic
-        toast.success('Token generated successfully!');
+
+        setLoading(true);
+
+        try {
+            const result = await axios.get(
+                `${process.env.REACT_APP_API_URL}/accesstoken?project_id=${projectID}`,
+                {
+                    headers: {
+                        authorization: token,
+                    },
+                }
+            );
+
+            if (result.status === 200) {
+                setAccessTokens(result.data);
+            }
+        } catch (err) {
+            switch (err.response?.status) {
+                case 401:
+                    toast.error("Your Session Has Expired! Please Login Again!");
+                    navigate('/login');
+                    break;
+                case 403:
+                    toast.error("You Are Not Authorized!");
+                    navigate('/login');
+                    break;
+                case 404:
+                    // No tokens found
+                    setAccessTokens([]);
+                    break;
+                default:
+                    // toast.error("Something Went Wrong!");
+                    break;
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGenerateNewToken = () => {
+        navigate('/generatenewtoken', { state: { project_id: projectID } });
+    };
+
+    const handleCopyToken = (token) => {
+        navigator.clipboard.writeText(token);
+        toast.success('Token copied to clipboard!');
+    };
+
+    const handleDeleteToken = async (tokenId) => {
+        setLoading(true);
+
+        try {
+            const response = await axios.delete(
+                `${process.env.REACT_APP_API_URL}/accesstoken/${tokenId}`,
+                {
+                    headers: {
+                        authorization: localStorage.getItem("auth-token"),
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                toast.success('Token deleted successfully!');
+                loadAccessTokens();
+            }
+        } catch (err) {
+            switch (err.response?.status) {
+                case 400:
+                    toast.error("Bad request!");
+                    break;
+                case 401:
+                    toast.error("Unauthorized access!");
+                    navigate('/login');
+                    break;
+                case 403:
+                    toast.error("Unauthorized access!");
+                    navigate('/login');
+                    break;
+                case 404:
+                    toast.error("Token not found!");
+                    break;
+                default:
+                    toast.error("Something went wrong!");
+                    break;
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <NonSidebarLayout breadcrumb="Access Token Generation">
-            <div className="text-white mb-20 px-0 sm:px-12 lg:px-12 xl:px-32">
-                <div className="flex flex-col justify-center mx-1 sm:mx-4 lg:mx-40 my-4 bg-black3 px-4 md:px-20 py-8 rounded-xl">
-                    <h1 className="text-2xl font-semibold text-green mb-2">New fine-grained personal access token</h1>
-                    <p className="text-gray2 text-sm mb-6">
-                        Create a fine-grained, repository-scoped token suitable for personal API use and for using Git over HTTPS.
-                    </p>
+        <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens`}>
+            {/* Header with Add Button */}
+            <div className="flex flex-row justify-between px-7 sm:px-10 mt-6 sm:mt-2">
+                <span className="text-lg font-semibold">{projectName}</span>
+                <PillButton
+                    text="Generate New Token"
+                    icon={FaPlusCircle}
+                    onClick={handleGenerateNewToken}
+                />
+            </div>
 
-                    <div className="border-t border-gray1 border-opacity-30 mb-6"></div>
-
-                    {/* Token Name */}
-                    <div className="flex flex-col mb-4">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Token name <span className="text-red">*</span>
-                        </label>
-                        <TextBox
-                            type="text"
-                            value={tokenName}
-                            placeholder="Enter token name"
-                            maxLength={100}
-                            textAlign="left"
-                            width="w-full"
-                            mt="mt-1"
-                            onChange={handleTokenNameChange}
-                        />
-                        <p className="text-gray1 text-xs mt-1">
-                            A unique name for this token. May be visible to resource owners or users with possession of the token.
-                        </p>
+            {/* Access Tokens List */}
+            <div className="px-7 sm:px-10 mt-6 mb-28">
+                {accessTokens.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 bg-black3 rounded-xl">
+                        <FaKey className="text-4xl text-gray1 mb-4" />
+                        <p className="text-gray2 text-lg">No access tokens generated yet</p>
+                        <p className="text-gray1 text-sm mt-2">Click "Generate New Token" to create one</p>
                     </div>
-
-                    {/* Description */}
-                    <div className="flex flex-col mb-6">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Description
-                        </label>
-                        <textarea
-                            value={description}
-                            onChange={handleDescriptionChange}
-                            placeholder="Enter description (optional)"
-                            maxLength={500}
-                            rows={4}
-                            className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-lg px-4 py-2 mt-1 text-gray2 resize-none focus:outline-none focus:border-green"
-                        />
+                ) : (
+                    <div className="space-y-4">
+                        {accessTokens.map((token, index) => (
+                            <div
+                                key={token.token_id || index}
+                                className="bg-black3 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between"
+                            >
+                                <div className="flex-1">
+                                    <h3 className="text-green font-semibold text-lg">{token.token_name}</h3>
+                                    {token.description && (
+                                        <p className="text-gray2 text-sm mt-1">{token.description}</p>
+                                    )}
+                                    <div className="flex items-center mt-2">
+                                        <code className="text-gray1 text-xs bg-black2 px-3 py-1 rounded-full truncate max-w-xs sm:max-w-md">
+                                            {token.token_value ? `${token.token_value.substring(0, 20)}...` : '••••••••••••••••'}
+                                        </code>
+                                    </div>
+                                    {token.created_at && (
+                                        <p className="text-gray1 text-xs mt-2">
+                                            Created: {new Date(token.created_at).toLocaleDateString()}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="flex items-center space-x-3 mt-4 sm:mt-0">
+                                    {token.token_value && (
+                                        <button
+                                            onClick={() => handleCopyToken(token.token_value)}
+                                            className="text-green hover:text-gray2 transition-colors p-2"
+                                            title="Copy token"
+                                        >
+                                            <FaCopy className="text-lg" />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => handleDeleteToken(token.token_id)}
+                                        className="text-red hover:text-gray2 transition-colors p-2"
+                                        title="Delete token"
+                                    >
+                                        <FaTrash className="text-lg" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-
-                    {/* Generate Button */}
-                    <div className="flex justify-start mt-4">
-                        <PillButton
-                            text="Generate Token"
-                            onClick={handleGenerateToken}
-                            isPopup={true}
-                            icon={FaKey}
-                        />
-                    </div>
-                </div>
+                )}
             </div>
 
             <ToastContainer
@@ -97,7 +222,8 @@ const AccessTokenGeneration = () => {
                 pauseOnHover
                 theme="dark"
             />
-        </NonSidebarLayout>
+            <Spinner isVisible={loading} />
+        </SidebarLayout>
     );
 };
 

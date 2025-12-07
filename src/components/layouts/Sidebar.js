@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaMicrochip, FaDatabase, FaCogs, FaWindowClose, FaBackspace } from 'react-icons/fa';
+import { FaMicrochip, FaDatabase, FaCogs, FaWindowClose, FaBackspace, FaKey } from 'react-icons/fa';
 import { MdBarChart, MdDashboard } from 'react-icons/md';
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoAnalyticsSharp } from "react-icons/io5";
@@ -63,6 +63,9 @@ function Sidebar({ isSidebarOpen, active, toggleSidebar }) {
         }} />
         <SidebarButton text="Settings" icon={FaCogs} active={(active == 4) ? true : false} onClick={() => {
           navigate('/projectsettings', { state: { project_id: projectID } });
+        }} />
+        <SidebarButton text="Access Token" icon={FaKey} active={(active == 6) ? true : false} onClick={() => {
+          navigate('/accesstoken', { state: { project_id: projectID } });
         }} />
 
         {/* Horizontal Rule */}
