@@ -148,11 +148,13 @@ const AccessTokenGeneration = () => {
             {/* Header with Add Button */}
             <div className="flex flex-row justify-between px-7 sm:px-10 mt-6 sm:mt-2">
                 <span className="text-lg font-semibold">{projectName}</span>
-                <PillButton
-                    text="Generate New Token"
-                    icon={FaPlusCircle}
-                    onClick={handleGenerateNewToken}
-                />
+                {accessTokens.length > 0 && (
+                    <PillButton
+                        text="Generate New Token"
+                        icon={FaPlusCircle}
+                        onClick={handleGenerateNewToken}
+                    />
+                )}
             </div>
 
             {/* Access Tokens List */}
