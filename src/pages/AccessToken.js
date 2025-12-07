@@ -158,10 +158,11 @@ const AccessTokenGeneration = () => {
             {/* Access Tokens List */}
             <div className="px-7 sm:px-10 mt-6 mb-28">
                 {accessTokens.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 bg-black3 rounded-xl">
-                        <FaKey className="text-4xl text-gray1 mb-4" />
-                        <p className="text-gray2 text-lg">No access tokens generated yet</p>
-                        <p className="text-gray1 text-sm mt-2">Click "Generate New Token" to create one</p>
+                    <div className="w-full flex flex-col justify-center items-center">
+                        <div className="text-gray2 text-sm">No access tokens found</div>
+                        <div className="flex flex-row justify-center items-center mt-4">
+                            <PillButton text="Generate Your First Token" icon={FaPlusCircle} onClick={handleGenerateNewToken} />
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-4">
