@@ -19,7 +19,6 @@ const GenerateNewToken = () => {
     const [projectName, setProjectName] = useState(localStorage.getItem('project'));
 
     // Form states
-    const [tokenName, setTokenName] = useState('');
     const [description, setDescription] = useState('');
     const [expiration, setExpiration] = useState(30);
     const [devices, setDevices] = useState([]);
@@ -114,10 +113,6 @@ const GenerateNewToken = () => {
         }
     };
 
-    const handleTokenNameChange = (e) => {
-        setTokenName(e.target.value);
-    };
-
     const handleDescriptionChange = (e) => {
         const words = e.target.value.split(/\s+/).filter(word => word.length > 0);
         if (words.length <= 30) {
@@ -175,11 +170,6 @@ const GenerateNewToken = () => {
     };
 
     const handleGenerateToken = async () => {
-        if (!tokenName.trim()) {
-            toast.error('Token name is required');
-            return;
-        }
-
         if (!description.trim()) {
             toast.error('Description is required');
             return;
@@ -209,7 +199,6 @@ const GenerateNewToken = () => {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/accesstoken`,
                 {
-                    token_name: tokenName,
                     description: description,
                     project_id: projectID,
                     expiration_days: expiration,
@@ -266,7 +255,7 @@ const GenerateNewToken = () => {
                     >
                         <FaArrowLeft className="text-xl" />
                     </button>
-                    <span className="text-lg font-semibold">{projectName}</span>
+                    <span className="text-lg font-semibold">Back to Access Tokens</span>
                 </div>
             </div>
 
@@ -279,26 +268,6 @@ const GenerateNewToken = () => {
                     </p>
 
                     <div className="border-t border-gray1 border-opacity-30 mb-6"></div>
-
-                    {/* Token Name */}
-                    <div className="flex flex-col mb-4">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Token name <span className="text-red">*</span>
-                        </label>
-                        <TextBox
-                            type="text"
-                            value={tokenName}
-                            placeholder="Enter token name"
-                            maxLength={100}
-                            textAlign="left"
-                            width="w-full"
-                            mt="mt-1"
-                            onChange={handleTokenNameChange}
-                        />
-                        <p className="text-gray1 text-xs mt-1">
-                            A unique name for this token. May be visible to resource owners or users with possession of the token.
-                        </p>
-                    </div>
 
                     {/* Description */}
                     <div className="flex flex-col mb-6">

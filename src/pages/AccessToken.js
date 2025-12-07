@@ -146,8 +146,7 @@ const AccessTokenGeneration = () => {
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens`}>
             {/* Header with Add Button */}
-            <div className="flex flex-row justify-between px-7 sm:px-10 mt-6 sm:mt-2">
-                <span className="text-lg font-semibold">{projectName}</span>
+            <div className="flex flex-row justify-end px-7 sm:px-10 mt-6 sm:mt-2">
                 {accessTokens.length > 0 && (
                     <PillButton
                         text="Generate New Token"
