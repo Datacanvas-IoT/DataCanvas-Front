@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import SidebarLayout from '../components/layouts/SidebarLayout';
-import TextBox from '../components/input/TextBox';
 import PillButton from '../components/input/PillButton';
 import SelectBox from '../components/input/SelectBox';
 import Spinner from '../components/Spinner';
@@ -255,9 +254,9 @@ const GenerateNewToken = () => {
                         onClick={handleGoBack}
                         className="text-green hover:text-gray2 transition-colors mr-4"
                     >
-                        <FaArrowLeft className="text-xl" />
+                        <FaArrowLeft className="text-sm" />
                     </button>
-                    <span className="text-lg font-semibold">Back to Access Tokens</span>
+                    <span className="text-sm text-gray2">Back to Access Tokens</span>
                 </div>
             </div>
 

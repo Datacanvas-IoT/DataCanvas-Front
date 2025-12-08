@@ -96,9 +96,13 @@ const AccessTokenGeneration = () => {
         navigate('/generatenewtoken', { state: { project_id: projectID } });
     };
 
-    const handleCopyToken = (token) => {
-        navigator.clipboard.writeText(token);
-        toast.success('Token copied to clipboard!');
+    const handleCopyToken = async (token) => {
+        try {
+            await navigator.clipboard.writeText(token);
+            toast.success('Token copied to clipboard!');
+        } catch (err) {
+            toast.error('Failed to copy token to clipboard');
+        }
     };
 
     const handleDeleteToken = async (tokenId) => {
