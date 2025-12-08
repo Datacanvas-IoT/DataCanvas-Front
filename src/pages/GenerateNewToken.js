@@ -262,7 +262,7 @@ const GenerateNewToken = () => {
 
             {/* Token Generation Form */}
             <div className="px-7 sm:px-10 mt-6 mb-28">
-                <div className="bg-black3 rounded-xl p-6 md:p-10 max-w-2xl">
+                <div className="max-w-2xl">
                     <h1 className="text-2xl font-semibold text-green mb-2">Generate New Access Token</h1>
                     <p className="text-gray2 text-sm mb-6">
                         Create a fine-grained access token for API access to this project.
@@ -330,7 +330,7 @@ const GenerateNewToken = () => {
                         </p>
 
                         {devices.length === 0 ? (
-                            <div className="text-gray1 text-sm text-center py-4 bg-black2 rounded-lg">
+                            <div className="text-gray1 text-sm text-center py-4 bg-black3 rounded-lg">
                                 No devices found for this project
                             </div>
                         ) : (
@@ -338,7 +338,7 @@ const GenerateNewToken = () => {
                                 {devices.map((device) => (
                                     <label
                                         key={device.device_id}
-                                        className="flex items-center p-3 bg-black2 rounded-lg cursor-pointer hover:bg-gray3 transition-colors"
+                                        className="flex items-center p-3 bg-black3 rounded-lg cursor-pointer hover:bg-gray3 transition-colors border border-gray1 border-opacity-30"
                                     >
                                         <input
                                             type="checkbox"
