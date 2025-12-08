@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaMicrochip, FaDatabase, FaCogs, FaWindowClose, FaBackspace, FaKey } from 'react-icons/fa';
+import { FaMicrochip, FaDatabase, FaCogs, FaWindowClose, FaKey } from 'react-icons/fa';
 import { MdBarChart, MdDashboard } from 'react-icons/md';
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoAnalyticsSharp } from "react-icons/io5";
