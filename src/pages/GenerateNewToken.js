@@ -24,7 +24,6 @@ const GenerateNewToken = () => {
     const [devices, setDevices] = useState([]);
     const [selectedDevices, setSelectedDevices] = useState([]);
     const [domainSites, setDomainSites] = useState(['']);
-    const [newSite, setNewSite] = useState('');
 
     // Expiration options
     const expirationOptions = [
@@ -95,9 +94,6 @@ const GenerateNewToken = () => {
         } catch (err) {
             switch (err.response?.status) {
                 case 401:
-                    toast.error("Unauthorized access!");
-                    navigate('/login');
-                    break;
                 case 403:
                     toast.error("Unauthorized access!");
                     navigate('/login');
@@ -190,6 +186,12 @@ const GenerateNewToken = () => {
         const invalidDomains = validSites.filter(site => !isValidDomain(site));
         if (invalidDomains.length > 0) {
             toast.error(`Invalid domain format: ${invalidDomains[0]}. Use format like example.com`);
+            return;
+        }
+        //Validate for dublicate sites
+        const uniqueSites = [...new Set(validSites)];
+        if (uniqueSites.length !== validSites.length) {
+            toast.error('Duplicate domains detected. Please remove duplicates.');
             return;
         }
 
