@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaKey, FaArrowLeft, FaCalendarAlt, FaPlus, FaTimes } from 'react-icons/fa';
+import { FaKey, FaArrowLeft, FaCalendarAlt } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,6 +7,8 @@ import axios from 'axios';
 import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import SelectBox from '../components/input/SelectBox';
+import DeviceSelection from '../components/input/DeviceSelection';
+import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
 
 const GenerateNewToken = () => {
@@ -311,98 +313,20 @@ const GenerateNewToken = () => {
                     </div>
 
                     {/* Device Selection */}
-                    <div className="flex flex-col mb-6">
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="text-sm text-gray2 font-semibold">
-                                Devices <span className="text-red">*</span>
-                            </label>
-                            <button
-                                onClick={handleSelectAllDevices}
-                                className="text-xs text-green hover:text-gray2 transition-colors"
-                            >
-                                {selectedDevices.length === devices.length ? 'Deselect All' : 'Select All'}
-                            </button>
-                        </div>
-                        <p className="text-gray1 text-xs mb-3">
-                            Select the devices this token will have access to
-                        </p>
-
-                        {devices.length === 0 ? (
-                            <div className="text-gray1 text-sm text-center py-4 bg-black3 rounded-lg">
-                                No devices found for this project
-                            </div>
-                        ) : (
-                            <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                                {devices.map((device) => (
-                                    <label
-                                        key={device.device_id}
-                                        className="flex items-center p-3 bg-black3 rounded-lg cursor-pointer hover:bg-gray3 transition-colors border border-gray1 border-opacity-30"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedDevices.includes(device.device_id)}
-                                            onChange={() => handleDeviceToggle(device.device_id)}
-                                            className="w-4 h-4 accent-green mr-3"
-                                        />
-                                        <div className="flex-1">
-                                            <span className="text-gray2 text-sm font-medium">{device.device_name}</span>
-                                            {device.description && (
-                                                <p className="text-gray1 text-xs mt-0.5">{device.description}</p>
-                                            )}
-                                        </div>
-                                    </label>
-                                ))}
-                            </div>
-                        )}
-                        <p className="text-gray1 text-xs mt-2">
-                            {selectedDevices.length} of {devices.length} devices selected
-                        </p>
-                    </div>
+                    <DeviceSelection
+                        devices={devices}
+                        selectedDevices={selectedDevices}
+                        onDeviceToggle={handleDeviceToggle}
+                        onSelectAll={handleSelectAllDevices}
+                    />
 
                     {/* Domain Sites */}
-                    <div className="flex flex-col mb-6">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Domain Sites <span className="text-red">*</span>
-                        </label>
-                        <p className="text-gray1 text-xs mb-3">
-                            Add the domain sites that are allowed to use this token
-                        </p>
-
-                        <div className="space-y-2">
-                            {domainSites.map((site, index) => (
-                                <div key={index} className="flex items-center gap-2">
-                                    <input
-                                        type="text"
-                                        value={site}
-                                        onChange={(e) => handleSiteChange(index, e.target.value)}
-                                        placeholder="e.g., example.com"
-                                        className="flex-1 bg-black3 text-sm border border-gray2 border-opacity-30 rounded-full px-4 py-1 text-gray2 focus:outline-none focus:border-green"
-                                    />
-                                    {domainSites.length > 1 && (
-                                        <button
-                                            onClick={() => handleRemoveSite(index)}
-                                            className="text-red hover:text-gray2 transition-colors p-2"
-                                            title="Remove site"
-                                        >
-                                            <FaTimes className="text-sm" />
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-
-                        <button
-                            onClick={handleAddSite}
-                            className="flex items-center text-green hover:text-gray2 transition-colors mt-3 text-sm"
-                        >
-                            <FaPlus className="mr-2" />
-                            Add another site
-                        </button>
-
-                        <p className="text-gray1 text-xs mt-2">
-                            {domainSites.filter(site => site.trim() !== '').length} site(s) added
-                        </p>
-                    </div>
+                    <DomainSitesInput
+                        domainSites={domainSites}
+                        onSiteChange={handleSiteChange}
+                        onAddSite={handleAddSite}
+                        onRemoveSite={handleRemoveSite}
+                    />
 
                     {/* Buttons */}
                     <div className="flex justify-between mt-8">
