@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlusCircle, FaCopy, FaTrash } from 'react-icons/fa';
+import { FaPlusCircle } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import Spinner from '../components/Spinner';
+import AccessTokenCard from '../components/cards/AccessTokenCard';
 
 const AccessToken = () => {
     const navigate = useNavigate();
@@ -171,45 +172,12 @@ const AccessToken = () => {
                 ) : (
                     <div className="space-y-4">
                         {accessTokens.map((token, index) => (
-                            <div
+                            <AccessTokenCard
                                 key={token.token_id || index}
-                                className="bg-black3 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between"
-                            >
-                                <div className="flex-1">
-                                    <h3 className="text-green font-semibold text-lg">{token.token_name}</h3>
-                                    {token.description && (
-                                        <p className="text-gray2 text-sm mt-1">{token.description}</p>
-                                    )}
-                                    <div className="flex items-center mt-2">
-                                        <code className="text-gray1 text-xs bg-black2 px-3 py-1 rounded-full truncate max-w-xs sm:max-w-md">
-                                            {token.token_value ? `${token.token_value.substring(0, 20)}...` : '••••••••••••••••'}
-                                        </code>
-                                    </div>
-                                    {token.created_at && (
-                                        <p className="text-gray1 text-xs mt-2">
-                                            Created: {new Date(token.created_at).toLocaleDateString()}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="flex items-center space-x-3 mt-4 sm:mt-0">
-                                    {token.token_value && (
-                                        <button
-                                            onClick={() => handleCopyToken(token.token_value)}
-                                            className="text-green hover:text-gray2 transition-colors p-2"
-                                            title="Copy token"
-                                        >
-                                            <FaCopy className="text-lg" />
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={() => handleDeleteToken(token.token_id)}
-                                        className="text-red hover:text-gray2 transition-colors p-2"
-                                        title="Delete token"
-                                    >
-                                        <FaTrash className="text-lg" />
-                                    </button>
-                                </div>
-                            </div>
+                                token={token}
+                                onCopy={handleCopyToken}
+                                onDelete={handleDeleteToken}
+                            />
                         ))}
                     </div>
                 )}
