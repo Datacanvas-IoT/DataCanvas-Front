@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaKey, FaPlusCircle, FaCopy, FaTrash } from 'react-icons/fa';
+import { FaPlusCircle, FaCopy, FaTrash } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,13 +8,12 @@ import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import Spinner from '../components/Spinner';
 
-const AccessTokenGeneration = () => {
+const AccessToken = () => {
     const navigate = useNavigate();
     const { state } = useLocation();
 
     const [loading, setLoading] = useState(false);
     const [projectID, setProjectID] = useState(-1);
-    const [projectName, setProjectName] = useState(localStorage.getItem('project'));
 
     // Access tokens list
     const [accessTokens, setAccessTokens] = useState([]);
@@ -233,4 +232,4 @@ const AccessTokenGeneration = () => {
     );
 };
 
-export default AccessTokenGeneration;
+export default AccessToken;
