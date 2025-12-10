@@ -3,11 +3,11 @@ import { FaPlusCircle } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import Spinner from '../components/Spinner';
 import AccessTokenCard from '../components/cards/AccessTokenCard';
+import { getAccessKeysByProjectId, deleteAccessKey } from '../services/accessTokenService';
 
 const AccessToken = () => {
     const navigate = useNavigate();
@@ -57,17 +57,10 @@ const AccessToken = () => {
         setLoading(true);
 
         try {
-            const result = await axios.get(
-                `${process.env.REACT_APP_API_URL}/accesstoken?project_id=${projectID}`,
-                {
-                    headers: {
-                        authorization: token,
-                    },
-                }
-            );
+            const result = await getAccessKeysByProjectId(projectID);
 
-            if (result.status === 200) {
-                setAccessTokens(result.data);
+            if (result.status === 200 && result.data.success) {
+                setAccessTokens(result.data.access_keys);
             }
         } catch (err) {
             switch (err.response?.status) {
@@ -96,27 +89,16 @@ const AccessToken = () => {
         navigate('/generatenewtoken', { state: { project_id: projectID } });
     };
 
-    const handleCopyToken = async (token) => {
-        try {
-            await navigator.clipboard.writeText(token);
-            toast.success('Token copied to clipboard!');
-        } catch (err) {
-            toast.error('Failed to copy token to clipboard');
-        }
+    const handleEditToken = (token) => {
+        // TODO: Implement edit functionality
+        console.log('Edit token:', token);
     };
 
-    const handleDeleteToken = async (tokenId) => {
+    const handleDeleteToken = async (accessKeyId) => {
         setLoading(true);
 
         try {
-            const response = await axios.delete(
-                `${process.env.REACT_APP_API_URL}/accesstoken/${tokenId}`,
-                {
-                    headers: {
-                        authorization: localStorage.getItem("auth-token"),
-                    },
-                }
-            );
+            const response = await deleteAccessKey(accessKeyId);
 
             if (response.status === 200) {
                 toast.success('Token deleted successfully!');
@@ -173,9 +155,9 @@ const AccessToken = () => {
                     <div className="space-y-4">
                         {accessTokens.map((token, index) => (
                             <AccessTokenCard
-                                key={token.token_id || index}
+                                key={token.access_key_id || index}
                                 token={token}
-                                onCopy={handleCopyToken}
+                                onEdit={handleEditToken}
                                 onDelete={handleDeleteToken}
                             />
                         ))}
