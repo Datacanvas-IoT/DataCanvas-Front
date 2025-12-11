@@ -59,7 +59,7 @@ const AccessToken = () => {
         try {
             const result = await getAccessKeysByProjectId(projectID);
 
-            if (result.status === 200 && result.data.success) {
+            if (result.status === 200 && result.data?.success) {
                 setAccessTokens(result.data.access_keys);
             }
         } catch (err) {
@@ -153,14 +153,19 @@ const AccessToken = () => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {accessTokens.map((token, index) => (
-                            <AccessTokenCard
-                                key={token.access_key_id || index}
-                                token={token}
-                                onEdit={handleEditToken}
-                                onDelete={handleDeleteToken}
-                            />
-                        ))}
+                        {accessTokens.map((token, index) => {
+                            if (!token.access_key_id) {
+                                console.warn('AccessToken: Missing access_key_id for token at index', index, token);
+                            }
+                            return (
+                                <AccessTokenCard
+                                    key={token.access_key_id || index}
+                                    token={token}
+                                    onEdit={handleEditToken}
+                                    onDelete={handleDeleteToken}
+                                />
+                            );
+                        })}
                     </div>
                 )}
             </div>

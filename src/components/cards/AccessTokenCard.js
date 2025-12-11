@@ -4,7 +4,7 @@ import { FaTrash, FaPencilAlt } from 'react-icons/fa';
 const AccessTokenCard = ({ token, onEdit, onDelete }) => {
     // Format expiration date
     const formatDate = (dateString) => {
-        if (!dateString) return null;
+        if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString();
     };
 
@@ -12,7 +12,13 @@ const AccessTokenCard = ({ token, onEdit, onDelete }) => {
     const isExpired = token.expiration_date && new Date(token.expiration_date) < new Date();
 
     // Get device names from the devices array
-    const deviceNames = token.devices?.map(d => d.device?.device_name).filter(Boolean).join(', ');
+    const deviceNames = token.devices?.map(d => {
+        if (!d.device) {
+            console.warn('AccessTokenCard: Device object missing in token.devices element:', d, token);
+            return undefined;
+        }
+        return d.device.device_name;
+    }).filter(Boolean).join(', ');
 
     // Get domain names from the domains array
     const domainNames = token.domains?.map(d => d.access_key_domain_name).filter(Boolean);
