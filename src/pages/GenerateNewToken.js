@@ -3,13 +3,13 @@ import { FaKey, FaArrowLeft, FaCalendarAlt } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import SelectBox from '../components/input/SelectBox';
 import DeviceSelection from '../components/input/DeviceSelection';
 import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
+import { createAccessKey } from '../services/accessTokenService';
 
 const GenerateNewToken = () => {
     const navigate = useNavigate();
@@ -197,21 +197,13 @@ const GenerateNewToken = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/accesstoken`,
-                {
-                    description: description,
-                    project_id: projectID,
-                    expiration_days: expiration,
-                    device_ids: selectedDevices,
-                    domain_sites: domainSites.filter(site => site.trim() !== ''),
-                },
-                {
-                    headers: {
-                        authorization: localStorage.getItem("auth-token"),
-                    },
-                }
-            );
+            const response = await createAccessKey({
+                description: description,
+                project_id: projectID,
+                expiration_days: expiration,
+                device_ids: selectedDevices,
+                domain_sites: domainSites.filter(site => site.trim() !== ''),
+            });
 
             if (response.status === 200 || response.status === 201) {
                 toast.success('Token generated successfully!');
