@@ -7,7 +7,7 @@ import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import Spinner from '../components/Spinner';
 import AccessTokenCard from '../components/cards/AccessTokenCard';
-import { getAccessKeysByProjectId, deleteAccessKey } from '../services/accessTokenService';
+import accessTokenService from '../services/accessTokenService';
 
 const AccessToken = () => {
     const navigate = useNavigate();
@@ -57,7 +57,7 @@ const AccessToken = () => {
         setLoading(true);
 
         try {
-            const result = await getAccessKeysByProjectId(projectID);
+            const result = await accessTokenService.getAccessKeysByProjectId(projectID);
 
             if (result.status === 200 && result.data?.success) {
                 setAccessTokens(result.data.access_keys);
@@ -98,7 +98,7 @@ const AccessToken = () => {
         setLoading(true);
 
         try {
-            const response = await deleteAccessKey(accessKeyId);
+            const response = await accessTokenService.deleteAccessKey(accessKeyId);
 
             if (response.status === 200) {
                 toast.success('Token deleted successfully!');
