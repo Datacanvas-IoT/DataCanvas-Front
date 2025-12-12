@@ -9,7 +9,7 @@ import SelectBox from '../components/input/SelectBox';
 import DeviceSelection from '../components/input/DeviceSelection';
 import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
-import { createAccessKey } from '../services/accessTokenService';
+import accessTokenService from '../services/accessTokenService';
 
 const GenerateNewToken = () => {
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ const GenerateNewToken = () => {
     const [projectName, setProjectName] = useState(localStorage.getItem('project'));
 
     // Form states
-    const [description, setDescription] = useState('');
+    const [accessTokenName, setAccessTokenName] = useState('');
     const [expiration, setExpiration] = useState(30);
     const [devices, setDevices] = useState([]);
     const [selectedDevices, setSelectedDevices] = useState([]);
@@ -78,14 +78,7 @@ const GenerateNewToken = () => {
     const loadDevices = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/device?project_id=${projectID}`,
-                {
-                    headers: {
-                        authorization: localStorage.getItem("auth-token"),
-                    },
-                }
-            );
+            const response = await accessTokenService.getDevicesByProjectId(projectID);
 
             if (response.status === 200) {
                 setDevices(response.data);
@@ -93,14 +86,18 @@ const GenerateNewToken = () => {
         } catch (err) {
             switch (err.response?.status) {
                 case 401:
+                    toast.error("Your Session Has Expired! Please Login Again!");
+                    navigate('/login');
+                    break;
                 case 403:
-                    toast.error("Unauthorized access!");
+                    toast.error("You Are Not Authorized!");
                     navigate('/login');
                     break;
                 case 404:
                     setDevices([]);
                     break;
                 default:
+                    // toast.error("Something Went Wrong!");
                     break;
             }
         } finally {
@@ -108,10 +105,10 @@ const GenerateNewToken = () => {
         }
     };
 
-    const handleDescriptionChange = (e) => {
+    const handleAccessTokenNameChange = (e) => {
         const words = e.target.value.split(/\s+/).filter(word => word.length > 0);
         if (words.length <= 30) {
-            setDescription(e.target.value);
+            setAccessTokenName(e.target.value);
         }
     };
 
@@ -165,8 +162,8 @@ const GenerateNewToken = () => {
     };
 
     const handleGenerateToken = async () => {
-        if (!description.trim()) {
-            toast.error('Description is required');
+        if (!accessTokenName.trim()) {
+            toast.error('access token name is required');
             return;
         }
 
@@ -197,12 +194,12 @@ const GenerateNewToken = () => {
         setLoading(true);
 
         try {
-            const response = await createAccessKey({
-                description: description,
+            const response = await accessTokenService.createAccessKey({
+                access_key_name: accessTokenName,
                 project_id: projectID,
-                expiration_days: expiration,
-                device_ids: selectedDevices,
-                domain_sites: domainSites.filter(site => site.trim() !== ''),
+                domain_name_array: domainSites.filter(site => site.trim() !== ''),
+                device_id_array: selectedDevices,
+                valid_duration_for_access_key: expiration,
             });
 
             if (response.status === 200 || response.status === 201) {
@@ -215,15 +212,18 @@ const GenerateNewToken = () => {
         } catch (err) {
             switch (err.response?.status) {
                 case 400:
-                    toast.error("Bad request!");
+                    toast.error(err.response?.data?.message || "Bad request!");
                     break;
                 case 401:
-                    toast.error("Unauthorized access!");
+                    toast.error("Your Session Has Expired! Please Login Again!");
                     navigate('/login');
                     break;
                 case 403:
-                    toast.error("Unauthorized access!");
+                    toast.error("You Are Not Authorized!");
                     navigate('/login');
+                    break;
+                case 404:
+                    toast.error("Resource not found!");
                     break;
                 default:
                     toast.error("Something went wrong!");
@@ -234,8 +234,8 @@ const GenerateNewToken = () => {
         }
     };
 
-    // Count words in description
-    const wordCount = description.split(/\s+/).filter(word => word.length > 0).length;
+    // Count words in access token name
+    const wordCount = accessTokenName.split(/\s+/).filter(word => word.length > 0).length;
 
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens > Generate New`}>
@@ -262,15 +262,15 @@ const GenerateNewToken = () => {
 
                     <div className="border-t border-gray1 border-opacity-30 mb-6"></div>
 
-                    {/* Description */}
+                    {/* access token name */}
                     <div className="flex flex-col mb-6">
                         <label className="text-sm text-gray2 font-semibold mb-1">
-                            Description <span className="text-red">*</span>
+                            Access Token Name <span className="text-red">*</span>
                         </label>
                         <textarea
-                            value={description}
-                            onChange={handleDescriptionChange}
-                            placeholder="Enter description"
+                            value={accessTokenName}
+                            onChange={handleAccessTokenNameChange}
+                            placeholder="Enter access token name"
                             rows={3}
                             className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-lg px-4 py-2 mt-1 text-gray2 resize-none focus:outline-none focus:border-green"
                         />
