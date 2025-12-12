@@ -46,14 +46,6 @@ const AccessToken = () => {
 
     // API call for getting access tokens of the project
     const loadAccessTokens = async () => {
-        const token = localStorage.getItem("auth-token");
-
-        if (!token) {
-            toast.error("Please login to continue!");
-            navigate('/login');
-            return;
-        }
-
         setLoading(true);
 
         try {

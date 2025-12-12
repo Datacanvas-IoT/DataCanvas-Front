@@ -76,14 +76,6 @@ const GenerateNewToken = () => {
 
     // API call for getting devices of the project
     const loadDevices = async () => {
-        const token = localStorage.getItem("auth-token");
-
-        if (!token) {
-            toast.error("Please login to continue!");
-            navigate('/login');
-            return;
-        }
-
         setLoading(true);
         try {
             const response = await accessTokenService.getDevicesByProjectId(projectID);
