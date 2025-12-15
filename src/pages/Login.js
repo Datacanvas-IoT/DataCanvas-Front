@@ -35,7 +35,7 @@ function Login() {
         signInWithPopup(auth, provider)
             .then((result) => {
                 const user = result.user;
-                getAuthToken(user.email);
+                getAuthToken(user);
             }).catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
@@ -56,7 +56,7 @@ function Login() {
         signInWithPopup(auth, provider)
             .then((result) => {
                 const user = result.user;
-                getAuthToken(user.email);
+                getAuthToken(user);
             }).catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
@@ -67,8 +67,6 @@ function Login() {
                 setLoading(false);
             });
     }
-
-
 
     const handleLoginWithEmail = () => {
 
@@ -90,7 +88,7 @@ function Login() {
                             setLoading(false);
                             return;
                         }
-                        getAuthToken(email);
+                        getAuthToken(user);
                     })
                     .catch((error) => {
                         const errorCode = error.code;
@@ -123,9 +121,13 @@ function Login() {
 
     }
 
-    const getAuthToken = async (email) => {
-        if (!email) {
-            toast.error('Something went wrong! Please try again.');
+    const getAuthToken = async (user) => {
+        const accessToken = await user.getIdToken();
+        const email = user.email;
+
+        if(!email || !accessToken) {
+            console.log("Email or Access Token missing");
+            toast.error('Something went wrong!');
             setLoading(false);
             return;
         }
@@ -133,7 +135,7 @@ function Login() {
         try {
             const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
                 email: email,
-                api_key: 'abcd1234'
+                access_token: accessToken,
             });
 
             if (result.status === 200) {
