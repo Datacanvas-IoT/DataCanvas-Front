@@ -22,6 +22,8 @@ import DatasetViewer from './pages/DatasetViewer';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
 import ExpandedWidget from './pages/ExpandedWidget';
+import AccessToken from './pages/AccessToken';
+import GenerateNewToken from './pages/GenerateNewToken';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -46,6 +48,8 @@ root.render(
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/expand" element={<ExpandedWidget />} />
+      <Route path="/accesstoken" element={<AccessToken />} />
+      <Route path="/generatenewtoken" element={<GenerateNewToken />} />
     </Routes>
   </Router>
 );

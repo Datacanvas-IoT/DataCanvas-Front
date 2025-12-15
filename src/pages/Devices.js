@@ -353,7 +353,7 @@ const Device = () => {
               key={device.device_id}
               title={device.device_name}
               subtitle={device.description}
-              footer={"Last Update:" + device.footer}
+              footer={""}
               mx="mx-2"
               onDelete={
                 () => {

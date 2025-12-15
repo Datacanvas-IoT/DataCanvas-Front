@@ -95,7 +95,7 @@ const AddGaugeWidgetPopup = ({
         </SelectBox>
 
         <div className="mt-4">
-          <span className="text-sm">Maximum Value</span>
+          <span className="text-sm">Minimum Value</span>
           <TextBox type="number" placeholder="Enter minimum value"
             value={minValue}
             onChange={(e) => { setMinValue(e.target.value) }} />

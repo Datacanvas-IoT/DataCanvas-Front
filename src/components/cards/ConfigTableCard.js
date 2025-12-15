@@ -92,10 +92,13 @@ const ConfigTableCard = ({ columnName, dataType, defaultValue, isAutoIncrement, 
                     </div>
                 </div>
 
-                {/* Edit and Delete Section */}
-                {!disabled ? (
+                {disabled ? (
+                    <div className="px-3 bg-green bg-opacity-20 border border-green border-opacity-40 rounded-full">
+                        <span className="text-white text-xs font-medium">System Column</span>
+                    </div>
+                ) : (
                     <div className={`flex flex-row justify-start items-center space-x-12`}>
-                        <div className={`flex flex-row justify-between items-center space-x-2 cursor-pointer text-red  transition-all duration-300 hover:text-gray2`}
+                        <div className={`flex flex-row justify-between items-center space-x-2 cursor-pointer text-red transition-all duration-300 hover:text-gray2`}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onDelete()
@@ -103,7 +106,7 @@ const ConfigTableCard = ({ columnName, dataType, defaultValue, isAutoIncrement, 
                             <FaTrash className="text-lg" />
                         </div>
                     </div>
-                ) : null}
+                )}
 
             </div>
 

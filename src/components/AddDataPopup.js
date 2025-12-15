@@ -42,7 +42,7 @@ const AddDataPopup = ({ isOpen, closeFunction, columns, projectID, tblName, setL
         let newDataObject = {};
         newDataObject['device'] = 0;
         columns.map((column, index) => {
-            if (column.clm_name !== 'id' || column.clm_name !== 'device') {
+            if (!column.is_system_column) {
                 // If column does not have constraint_id 1 newDataObject[column.clm_name] = ''
                 let isAutoIncrement = column.constraints.find((constraint) => { if (constraint.constraint_id == 1) { return true } else { return false } });
                 if (!isAutoIncrement) {
@@ -229,7 +229,7 @@ const AddDataPopup = ({ isOpen, closeFunction, columns, projectID, tblName, setL
                     </SelectBox>
                 </div>
                 {columns.map((column, index) => {
-                    if (column.clm_name !== 'id' && column.clm_name !== 'device' && !column.constraints.find((constraint) => { if (constraint.constraint_id == 1) { return true } else { return false } })) {
+                    if (!column.is_system_column && !column.constraints.find((constraint) => { if (constraint.constraint_id == 1) { return true } else { return false } })) {
                         return (
                             <div key={index}>
                                 {InputContainer(
