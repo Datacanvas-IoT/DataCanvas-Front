@@ -25,12 +25,13 @@ function SignUp() {
         e.preventDefault();
         setLoading(true);
         createUserWithEmailAndPassword(auth, email, password1, username)
-            .then((userCredential) => {
+            .then(async (userCredential) => {
                 const user = userCredential.user;
                 if (user) {
+                    const accessToken = await user.getIdToken();
                     sendEmailVerification(user)
                         .then(async () => {
-                            createNewUser(email, username, 0);
+                            createNewUser(email, username, 0, accessToken);
                         });
                 }
             })
@@ -75,11 +76,12 @@ function SignUp() {
         setLoading(true);
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
-            .then((result) => {
+            .then(async (result) => {
                 const user = result.user;
                 const displayName = user.displayName;
                 const email = user.email;
-                createNewUser(email, displayName, 1);
+                const accessToken = await user.getIdToken();
+                createNewUser(email, displayName, 1, accessToken);
             })
             .catch((error) => {
                 const errorMessage = error.message;
@@ -93,9 +95,10 @@ function SignUp() {
         setLoading(true);
         const provider = new GithubAuthProvider();
         signInWithPopup(auth, provider)
-            .then((result) => {
+            .then(async (result) => {
                 const user = result.user;
-                createNewUser(user.email, user.displayName, 2);
+                const accessToken = await user.getIdToken();
+                createNewUser(user.email, user.displayName, 2, accessToken);
             })
             .catch((error) => {
                 const errorMessage = error.message;
@@ -104,7 +107,7 @@ function SignUp() {
             });
     }
 
-    const createNewUser = async (email, username, type) => { // type -> determine the authentication type, 0 - for Email/Password, 1 - for Google, 2 - for Github 
+    const createNewUser = async (email, username, type, accessToken) => { // type -> determine the authentication type, 0 - for Email/Password, 1 - for Google, 2 - for Github 
         if (type != 0) { // When the authentication type is not Email/Password, check if the user already exists because google and github authentication methods do not check if the user already exists
             try {
                 const result = await axios.get(API_URL + "?email=" + email);
@@ -130,7 +133,7 @@ function SignUp() {
         }
 
         try {
-            const result = await axios.post(API_URL, { email: email, user_name: username })
+            const result = await axios.post(API_URL, { email: email, user_name: username, access_token: accessToken })
 
             if (result.status === 201) {
                 if (type === 0) {
