@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaPlusCircle, FaUpload } from "react-icons/fa";
+import { FaPlusCircle, FaUpload, FaFilter } from "react-icons/fa";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,6 +8,8 @@ import PillButton from "../components/input/PillButton";
 import Pagination from "../components/Pagination";
 import Spinner from "../components/Spinner";
 import AddDataPopup from "../components/AddDataPopup";
+import ColumnVisibilityControl from "../components/ColumnVisibilityControl";
+import FilterPopup from "../components/FilterPopup";
 import axios from "axios";
 import './../styles/scrollbar.css';
 
@@ -19,7 +21,7 @@ function DatasetViewer() {
     const { state } = useLocation();
 
     // ---------- Loading state for spinner ----------
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // ---------- Table Details ----------
     const [projectID, setProjectID] = useState(-1);
@@ -40,23 +42,9 @@ function DatasetViewer() {
         // },
     ])
 
-    const [columns, setColumns] = useState([
-        // {
-        //     clm_id: 1,
-        //     clm_name: 'id',
-        //     data_type: 1,
-        //     default_value: 'N/A',
-        //     max_length: 0,
-        //     constraints: [
-        //         {
-        //             constraint_id: 1
-        //         },
-        //         {
-        //             constraint_id: 2
-        //         }
-        //     ]
-        // }
-    ]);
+    const [columns, setColumns] = useState([]);
+
+    const [visibleColumns, setVisibleColumns] = useState([]);
 
     // ---------- Data Retrieval ----------
     const [retrievedData, setRetrievedData] = useState([]);
@@ -66,6 +54,9 @@ function DatasetViewer() {
 
     // ---------- Add Data Popup ----------
     const [addDataPopupVisible, setAddDataPopupVisible] = useState(false);
+
+    const [filterPopupVisible, setFilterPopupVisible] = useState(false);
+    const [orderFilter, setOrderFilter] = useState('DESC');
 
     useEffect(() => {
         // ---------- Getting tbl_id from the location state and uypdating tblID state ----------
@@ -110,6 +101,12 @@ function DatasetViewer() {
             loadDataOfATable();
         }
     }, [addDataPopupVisible]);
+
+    useEffect(() => {
+        if (tblID != -1 && columns.length > 0) {
+            loadDataOfATable();
+        }
+    }, [orderFilter]);
 
     // ---------- Function to get data types ----------
     const getDataTypes = async (token) => {
@@ -205,9 +202,15 @@ function DatasetViewer() {
                     'authorization': token
                 }
             });
-            // Sort columns by clm_id
-            res.data.sort((a, b) => (a.clm_id > b.clm_id) ? 1 : -1);
+            // Sort columns: system columns first, then by clm_id
+            res.data.sort((a, b) => {
+                if (a.is_system_column === b.is_system_column) {
+                    return a.clm_id - b.clm_id;
+                }
+                return a.is_system_column ? -1 : 1;
+            });
             setColumns(res.data);
+            setVisibleColumns(res.data.map(col => col.clm_id));
             setLoading(false);
         } catch (err) {
             setLoading(false);
@@ -261,7 +264,7 @@ function DatasetViewer() {
             setLoading(true);
             // ---------- Get auth-token from local storage ----------
             const token = localStorage.getItem('auth-token');
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/all/?tbl_id=${tblID}&limit=${dataRetrievalLimit}&offset=${dataRetrievalOffset}`, {
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/all/?tbl_id=${tblID}&limit=${dataRetrievalLimit}&offset=${dataRetrievalOffset}&order=${orderFilter}`, {
                 headers: {
                     'authorization': token
                 }
@@ -295,16 +298,22 @@ function DatasetViewer() {
             <div className={`flex flex-col sm:flex-row justify-center items-center text-center sm:justify-between px-7 sm:px-10 mt-5 sm:mt-3`}>
                 <span className={`text-lg font-semibold`}>Gathered Data - {tblName}</span>
                 <div className={`flex mt-2 sm:mt-0 space-x-4`}>
+                    <ColumnVisibilityControl 
+                        columns={columns} 
+                        visibleColumns={visibleColumns} 
+                        setVisibleColumns={setVisibleColumns} 
+                    />
+                    <PillButton text="Filter" icon={FaFilter} onClick={() => { setFilterPopupVisible(true) }} />
                     <PillButton text="View API" icon={FaUpload} onClick={() => { }} />
                     <PillButton text="Add Data" icon={FaPlusCircle} onClick={() => { setAddDataPopupVisible(true) }} />
                 </div>
             </div>
 
-            <div className="overflow-x-scroll overflow-y-scroll max-h-[500px] px-7 sm:px-10 mt-5 sm:mt-6">
+            <div className="overflow-x-scroll overflow-y-scroll h-[calc(100vh-230px)] px-7 sm:px-10 mt-5 sm:mt-6">
                 <table className="table-fixed w-full mb-4">
                     <thead>
                         <tr className={`bg-black3 `}>
-                            {columns.map((column, index) => {
+                            {columns.filter(col => visibleColumns.includes(col.clm_id)).map((column, index) => {
                                 return (
                                     <th key={column.clm_id} className="w-[200px] border border-gray1 border-opacity-40 text-gray2 text-sm py-2 font-normal">{column.clm_name}</th>
                                 )
@@ -315,9 +324,9 @@ function DatasetViewer() {
                         {retrievedData.map((row, index) => {
                             return (
                                 <tr key={index}>
-                                    {columns.map((column, index) => {
+                                    {columns.filter(col => visibleColumns.includes(col.clm_id)).map((column) => {
                                         return (
-                                            <td key={column.clm_id} className="border border-gray1 border-opacity-40 text-white text-xs text-center px-2 py-2">{row[column.clm_name].toString()}</td>
+                                            <td key={column.clm_id} className="border border-gray1 border-opacity-40 text-white text-xs text-center px-2 py-2">{(row[column.clm_name] == null || row[column.clm_name] == undefined) ? '[null]' : row[column.clm_name].toString()}</td>
                                         )
                                     })}
                                 </tr>
@@ -341,6 +350,17 @@ function DatasetViewer() {
                     projectID={projectID}
                     tblName={tblName}
                     setLoading={setLoading} />
+            ) : null}
+
+            {filterPopupVisible ? (
+                <FilterPopup 
+                    isOpen={filterPopupVisible}
+                    closeFunction={() => setFilterPopupVisible(false)}
+                    currentOrder={orderFilter}
+                    onApplyFilters={(filters) => {
+                        setOrderFilter(filters.order);
+                        setDataRetrievalOffset(0);
+                    }} />
             ) : null}
 
             {/* Spinner */}

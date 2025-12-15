@@ -250,8 +250,15 @@ function ConfigureTable() {
                     'authorization': token
                 }
             });
-            // Sort columns by clm_id
-            res.data.sort((a, b) => (a.clm_id > b.clm_id) ? 1 : -1);
+            // Sort columns: system columns first, then by clm_id
+            res.data.sort((a, b) => {
+                // First, sort by is_system_column (true first)
+                if (a.is_system_column !== b.is_system_column) {
+                    return b.is_system_column ? 1 : -1;
+                }
+                // Then sort by clm_id
+                return a.clm_id - b.clm_id;
+            });
             setColumns(res.data);
             setLoading(false);
         } catch (err) {
@@ -425,15 +432,8 @@ function ConfigureTable() {
                             toast.error('Session expired. Please login again');
                             navigate('/login');
                             break;
-                        case 400 || 404:
-                            toast.error('Error in adding field');
-                            navigate('/projects')
-                            break;
-                        case 409:
-                            toast.error('Field name already exists');
-                            break;
                         default:
-                            toast.error('Something went wrong');
+                            toast.error(`Error: ` + err.response.data.error);
                             break;
                     }
                 } finally {
@@ -504,18 +504,8 @@ function ConfigureTable() {
                             toast.error('Session expired. Please login again');
                             navigate('/login');
                             break;
-                        case 400 || 404:
-                            toast.error('Error in updating field');
-                            navigate('/overview')
-                            break;
-                        case 405:
-                            toast.error('Field data type cannot be changed');
-                            break;
-                        case 409:
-                            toast.error('Field name already exists');
-                            break;
                         default:
-                            toast.error('Something went wrong');
+                            toast.error(`Error: ` + err.response.data.error);
                             break;
                     }
                 } finally {
@@ -655,11 +645,8 @@ function ConfigureTable() {
                         toast.error('Session expired. Please login again');
                         navigate('/login');
                         break;
-                    case 400 || 404:
-                        toast.error('Error in deleting field');
-                        break;
                     default:
-                        toast.error('Something went wrong');
+                        toast.error(`Error: ` + err.response.data.error);
                         break;
                 }
             } finally {
@@ -716,11 +703,8 @@ function ConfigureTable() {
                     toast.error('Session expired. Please login again');
                     navigate('/login');
                     break;
-                case 400 || 404:
-                    toast.error('Error in truncating table');
-                    break;
                 default:
-                    toast.error('Something went wrong');
+                    toast.error(`Error: ` + err.response.data.error);
                     break;
             }
         } finally {
@@ -755,11 +739,8 @@ function ConfigureTable() {
                     toast.error('Session expired. Please login again');
                     navigate('/login');
                     break;
-                case 400 || 404:
-                    toast.error('Error in deleting table');
-                    break;
                 default:
-                    toast.error('Something went wrong');
+                    toast.error(`Error: ` + err.response.data.error);
                     break;
             }
         } finally {
@@ -902,6 +883,7 @@ function ConfigureTable() {
 
     return (
         <SidebarLayout active={3} breadcrumb={`${localStorage.getItem('project')} > ${tblName} > Configure`}>
+            <div className="pb-24">
             <div className={`flex flex-col sm:flex-row justify-center items-center text-center sm:justify-between px-7 sm:px-10 mt-5 sm:mt-3`}>
                 <span className={`text-lg font-semibold`}>Configure Table - {tblName}</span>
                 <div className={`mt-2 sm:mt-0`}>
@@ -925,7 +907,7 @@ function ConfigureTable() {
                                     selectDeletingColumn(column.clm_id)
                                 }
                             }}
-                            disabled={((column.clm_name == 'id' || (column.clm_name) == 'device')) ? true : false} />
+                            disabled={column.is_system_column} />
                     )
                 })}
             </div>
@@ -973,6 +955,7 @@ function ConfigureTable() {
                 pauseOnHover
                 theme="dark"
             />
+            </div>
         </SidebarLayout>
     )
 }
