@@ -34,7 +34,6 @@ const AddGaugeWidgetPopup = ({
   }, [isOpen])
 
   const saveConfiguration = () => {
-
     if (selectedColumn == 0 || maxValue.toString().trim() == '' || minValue.toString().trim() == '' || selectedDevice == -1) {
       toast.error("Please fill all the fields");
       return;
@@ -50,6 +49,7 @@ const AddGaugeWidgetPopup = ({
       selectedDeviceID = selectedDevice;
     }
 
+    console.log("Min and max values:", minValue, maxValue);
     if (minValue >= maxValue) {
       toast.error("Minimum value should be less than maximum value");
       return;
@@ -98,14 +98,14 @@ const AddGaugeWidgetPopup = ({
           <span className="text-sm">Minimum Value</span>
           <TextBox type="number" placeholder="Enter minimum value"
             value={minValue}
-            onChange={(e) => { setMinValue(e.target.value) }} />
+            onChange={(e) => { setMinValue(parseInt(e.target.value)) }} />
         </div>
 
         <div className="mt-4">
           <span className="text-sm">Maximum Value</span>
           <TextBox type="number" placeholder="Enter maximum value"
             value={maxValue}
-            onChange={(e) => { setMaxValue(e.target.value) }} />
+            onChange={(e) => { setMaxValue(parseInt(e.target.value)) }} />
         </div>
 
         <div className="mt-4">

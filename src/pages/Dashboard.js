@@ -13,6 +13,7 @@ import DashboardChartCard from '../components/cards/DashboardChartCard';
 import DashboardTableCard from '../components/cards/DashboardTableCard';
 import DashboardToggleCard from '../components/cards/DashboardToggleCard';
 import DashboardGaugeCard from '../components/cards/DashboardGaugeCard';
+import DashboardMetricCard from '../components/cards/DashboardMetricCard';
 import DeleteWidgetPopup from '../components/Widgets/DeleteWidgetPopup';
 
 function Dashboard() {
@@ -360,7 +361,12 @@ function Dashboard() {
                                         deleteWidget={(widget_id) => deleteWidget(widget_id)}
                                         updateWidget={(widget) => handleUpdateWidgetClicked(widget)}
                                         mqttPayload={mqttPayload} />
-                                        : null
+                                        : (widget.widget_type == 5) ? <DashboardMetricCard key={index} widget={widget} onClick={() => {
+                                        }}
+                                            deleteWidget={(widget_id) => deleteWidget(widget_id)}
+                                            updateWidget={(widget) => handleUpdateWidgetClicked(widget)}
+                                            mqttPayload={mqttPayload} />
+                                            : null
                     )
                 })}
             </div>
