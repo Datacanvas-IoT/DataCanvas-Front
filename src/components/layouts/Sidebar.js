@@ -10,8 +10,7 @@ import { toast } from 'react-toastify';
 function Sidebar({ isSidebarOpen, active, toggleSidebar }) {
   // ---------- Navigation ----------
   const navigate = useNavigate();
-
-  // const { state } = useLocation();
+  const location = useLocation();
 
   const [projectID, setProjectID] = useState(-1);
 
@@ -26,6 +25,28 @@ function Sidebar({ isSidebarOpen, active, toggleSidebar }) {
 
   useEffect(() => {
   }, [projectID])
+
+  // ---------- Automatically determine active tab based on current route ----------
+  const getActiveIndex = () => {
+    if (active !== undefined && active !== null) {
+      // If active prop is explicitly provided, use it (backward compatibility)
+      return active;
+    }
+    
+    // Map routes to active indices
+    const path = location.pathname;
+    if (path.includes('/overview')) return 0;
+    if (path.includes('/dashboard') || path.includes('/expand')) return 1;
+    if (path.includes('/devices')) return 2;
+    if (path.includes('/datahandler') || path.includes('/configtable') || path.includes('/dataset')) return 3;
+    if (path.includes('/projectsettings')) return 4;
+    if (path.includes('/analytics')) return 5;
+    if (path.includes('/accesstoken') || path.includes('/generatenewtoken')) return 6;
+    
+    return -1; // No active tab
+  };
+
+  const activeIndex = getActiveIndex();
 
   const SidebarButton = ({ text, icon: Icon, active, onClick }) => {
     return (
@@ -46,25 +67,25 @@ function Sidebar({ isSidebarOpen, active, toggleSidebar }) {
       </div>
 
       <div className="mt-8 px-3">
-        <SidebarButton text="Overview" icon={MdDashboard} active={(active == 0) ? true : false} onClick={() => {
+        <SidebarButton text="Overview" icon={MdDashboard} active={(activeIndex == 0) ? true : false} onClick={() => {
           navigate('/overview', { state: { project_id: projectID } });
         }} />
-        <SidebarButton text="Visualizations" icon={TbReportAnalytics} active={(active == 1) ? true : false} onClick={() => {
+        <SidebarButton text="Visualizations" icon={TbReportAnalytics} active={(activeIndex == 1) ? true : false} onClick={() => {
           navigate('/dashboard', { state: { project_id: projectID } });
         }} />
-        <SidebarButton text="Analytics" icon={IoAnalyticsSharp} active={(active == 5) ? true : false} onClick={() => {
+        <SidebarButton text="Analytics" icon={IoAnalyticsSharp} active={(activeIndex == 5) ? true : false} onClick={() => {
           navigate('/analytics', { state: { project_id: projectID } });
         }} />
-        <SidebarButton text="Devices" icon={FaMicrochip} active={(active == 2) ? true : false} onClick={() => {
+        <SidebarButton text="Devices" icon={FaMicrochip} active={(activeIndex == 2) ? true : false} onClick={() => {
           navigate('/devices', { state: { project_id: projectID } });
         }} />
-        <SidebarButton text="Data Tables" icon={FaDatabase} active={(active == 3) ? true : false} onClick={() => {
+        <SidebarButton text="Data Tables" icon={FaDatabase} active={(activeIndex == 3) ? true : false} onClick={() => {
           navigate('/datahandler', { state: { project_id: projectID } });
         }} />
-        <SidebarButton text="Settings" icon={FaCogs} active={(active == 4) ? true : false} onClick={() => {
+        <SidebarButton text="Settings" icon={FaCogs} active={(activeIndex == 4) ? true : false} onClick={() => {
           navigate('/projectsettings', { state: { project_id: projectID } });
         }} />
-        <SidebarButton text="Access Token" icon={FaKey} active={(active == 6) ? true : false} onClick={() => {
+        <SidebarButton text="Access Token" icon={FaKey} active={(activeIndex == 6) ? true : false} onClick={() => {
           navigate('/accesstoken', { state: { project_id: projectID } });
         }} />
 
