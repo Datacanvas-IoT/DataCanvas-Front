@@ -33,15 +33,21 @@ function Sidebar({ isSidebarOpen, active, toggleSidebar }) {
       return active;
     }
     
-    // Map routes to active indices using startsWith for precise matching
+    // Map routes to active indices
     const path = location.pathname;
-    if (path.startsWith('/overview')) return 0;
-    if (path.startsWith('/dashboard') || path.startsWith('/expand')) return 1;
-    if (path.startsWith('/devices')) return 2;
-    if (path.startsWith('/datahandler') || path.startsWith('/configtable') || path.startsWith('/dataset')) return 3;
-    if (path.startsWith('/projectsettings')) return 4;
-    if (path.startsWith('/analytics')) return 5;
-    if (path.startsWith('/accesstoken') || path.startsWith('/generatenewtoken')) return 6;
+    
+    // Use exact matching with startsWith to prevent false positives
+    if (path === '/overview' || path.startsWith('/overview/')) return 0;
+    if (path === '/dashboard' || path.startsWith('/dashboard/') || 
+        path === '/expand' || path.startsWith('/expand/')) return 1;
+    if (path === '/devices' || path.startsWith('/devices/')) return 2;
+    if (path === '/datahandler' || path.startsWith('/datahandler/') ||
+        path === '/configtable' || path.startsWith('/configtable/') ||
+        path === '/dataset' || path.startsWith('/dataset/')) return 3;
+    if (path === '/projectsettings' || path.startsWith('/projectsettings/')) return 4;
+    if (path === '/analytics' || path.startsWith('/analytics/')) return 5;
+    if (path === '/accesstoken' || path.startsWith('/accesstoken/') ||
+        path === '/generatenewtoken' || path.startsWith('/generatenewtoken/')) return 6;
     
     return -1; // No active tab
   };
