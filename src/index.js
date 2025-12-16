@@ -24,6 +24,7 @@ import Analytics from './pages/Analytics';
 import ExpandedWidget from './pages/ExpandedWidget';
 import AccessToken from './pages/AccessToken';
 import GenerateNewToken from './pages/GenerateNewToken';
+import AccessTokenView from './pages/AccessTokenView';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -49,6 +50,7 @@ root.render(
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/expand" element={<ExpandedWidget />} />
       <Route path="/accesstoken" element={<AccessToken />} />
+      <Route path="/accesstoken/view" element={<AccessTokenView />} />
       <Route path="/generatenewtoken" element={<GenerateNewToken />} />
     </Routes>
   </Router>

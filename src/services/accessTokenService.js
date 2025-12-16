@@ -7,7 +7,7 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @returns {Object} Headers object with authorization token
  */
 const getAuthHeaders = () => ({
-    authorization: localStorage.getItem('auth-token'),
+    Authorization: `Bearer ${localStorage.getItem('auth-token') || ''}`,
 });
 
 /**
@@ -73,6 +73,21 @@ const accessTokenService = {
         const response = await axios.post(
             `${API_URL}/access-key`,
             accessKeyData,
+            {
+                headers: getAuthHeaders(),
+            }
+        );
+        return response;
+    },
+
+    /**
+     * Get a single access key by ID
+     * @param {number|string} accessKeyId - The access key ID to retrieve
+     * @returns {Promise<Object>} Response containing access key details
+     */
+    getAccessKeyById: async (accessKeyId) => {
+        const response = await axios.get(
+            `${API_URL}/access-keys/${accessKeyId}`,
             {
                 headers: getAuthHeaders(),
             }

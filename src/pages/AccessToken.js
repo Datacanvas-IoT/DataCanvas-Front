@@ -19,6 +19,7 @@ const AccessToken = () => {
     // Access tokens list
     const [accessTokens, setAccessTokens] = useState([]);
 
+
     // Get project_id from location state
     useEffect(() => {
         try {
@@ -121,10 +122,18 @@ const AccessToken = () => {
         }
     };
 
+    const handleViewAccessKeys = () => {
+        navigate('/accesstoken/view', { state: { project_id: projectID } });
+    };
+
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens`}>
-            {/* Header with Add Button */}
-            <div className="flex flex-row justify-end px-7 sm:px-10 mt-6 sm:mt-2">
+            {/* Header Actions */}
+            <div className="flex flex-row justify-end gap-3 px-7 sm:px-10 mt-6 sm:mt-2">
+                <PillButton
+                    text="View Access Keys"
+                    onClick={handleViewAccessKeys}
+                />
                 {accessTokens.length > 0 && (
                     <PillButton
                         text="Generate New Token"
@@ -133,6 +142,8 @@ const AccessToken = () => {
                     />
                 )}
             </div>
+
+            {/* Note: GetByID moved to dedicated view page */}
 
             {/* Access Tokens List */}
             <div className="px-7 sm:px-10 mt-6 mb-28">
