@@ -95,7 +95,6 @@ const AddParameterTablePopup = ({
                   </label>
                   <SelectBox value={selectedDevice} onChange={(e) => { setSelectedDevice(e.target.value) }}>
                         <option value={-1}>Select Device</option>
-                        <option value={0}>All Devices</option>
                         {devices.map((device) => {
                               return (
                                     <option key={device.device_id} value={device.device_id}>

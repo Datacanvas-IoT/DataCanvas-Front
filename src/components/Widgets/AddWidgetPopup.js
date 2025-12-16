@@ -21,7 +21,8 @@ const AddWidgetPopup = ({
         { id: 1, name: 'Chart (Any)' },
         { id: 2, name: 'Table' },
         { id: 3, name: 'Toggle Switch' },
-        { id: 4, name: 'Gauge' }
+        { id: 4, name: 'Gauge' },
+        { id: 5, name: 'Metric' }
     ]);
 
     useEffect(() => {

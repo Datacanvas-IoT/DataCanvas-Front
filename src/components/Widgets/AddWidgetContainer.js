@@ -5,6 +5,7 @@ import AddChartWidgetPopup from "./AddChartWidgetPopup";
 import AddParameterTablePopup from "./AddParameterTablePopup";
 import AddToggleWidgetPopup from "./AddToggleWidgetPopup";
 import AddGaugeWidgetPopup from "./AddGaugeWidgetPopup";
+import AddMetricWidgetPopup from "./AddMetricWidgetPopup";
 import axios from "axios";
 
 const AddWidgetContainer = ({
@@ -210,73 +211,103 @@ const AddWidgetContainer = ({
 
     }
 
+    const renderPopup = () => {
+        switch (visiblePopup) {
+            case 1:
+                return (
+                    <AddWidgetPopup
+                        isOpen={isOpen}
+                        closeFunction={closePopup}
+                        tables={tables}
+                        widgetName={widgetName}
+                        setWidgetName={setWidgetName}
+                        widgetType={widgetType}
+                        setWidgetType={setWidgetType}
+                        dataset={dataset}
+                        setDataset={setDataset}
+                        nextFunction={togglePopup}
+                        type={type}
+                        currentWidget={selectedWidget}
+                    />
+                );
+            case 2:
+                return (
+                    <AddChartWidgetPopup
+                        isOpen={isOpen}
+                        closeFunction={closePopup}
+                        columns={columns}
+                        devices={devices}
+                        configuration={configuration}
+                        setConfiguration={setConfiguration}
+                        submitFunction={(type == 0 ? addWidget : updateWidget)}
+                        type={type}
+                        oldWidget={type == 1 ? selectedWidget : {}}
+                    />
+                );
+            case 3:
+                return (
+                    <AddParameterTablePopup
+                        isOpen={isOpen}
+                        closeFunction={closePopup}
+                        columns={columns}
+                        devices={devices}
+                        configuration={configuration}
+                        setConfiguration={setConfiguration}
+                        submitFunction={(type == 0 ? addWidget : updateWidget)}
+                        type={type}
+                        oldWidget={type == 1 ? selectedWidget : {}}
+                    />
+                );
+            case 4:
+                return (
+                    <AddToggleWidgetPopup
+                        isOpen={isOpen}
+                        closeFunction={closePopup}
+                        columns={columns}
+                        devices={devices}
+                        configuration={configuration}
+                        setConfiguration={setConfiguration}
+                        submitFunction={(type == 0 ? addWidget : updateWidget)}
+                        type={type}
+                        oldWidget={type == 1 ? selectedWidget : {}}
+                    />
+                );
+            case 5:
+                return (
+                    <AddGaugeWidgetPopup
+                        isOpen={isOpen}
+                        closeFunction={closePopup}
+                        columns={columns}
+                        devices={devices}
+                        configuration={configuration}
+                        setConfiguration={setConfiguration}
+                        submitFunction={(type == 0 ? addWidget : updateWidget)}
+                        type={type}
+                        oldWidget={type == 1 ? selectedWidget : {}}
+                    />
+                );
+            case 6:
+                return (
+                    <AddMetricWidgetPopup
+                        isOpen={isOpen}
+                        closeFunction={closePopup}
+                        columns={columns}
+                        devices={devices}
+                        configuration={configuration}
+                        setConfiguration={setConfiguration}
+                        submitFunction={(type == 0 ? addWidget : updateWidget)}
+                        type={type}
+                        oldWidget={type == 1 ? selectedWidget : {}}
+                    />
+                );
+            default:
+                return null;
+        }
+    }
+
     return (
         <>
-            {visiblePopup == 1 ? (
-                <AddWidgetPopup
-                    isOpen={isOpen}
-                    closeFunction={closePopup}
-                    tables={tables}
-                    widgetName={widgetName}
-                    setWidgetName={setWidgetName}
-                    widgetType={widgetType}
-                    setWidgetType={setWidgetType}
-                    dataset={dataset}
-                    setDataset={setDataset}
-                    nextFunction={togglePopup}
-                    type={type}
-                    currentWidget={selectedWidget}
-                />
-            ) : (visiblePopup == 2 ? (
-                <AddChartWidgetPopup
-                    isOpen={isOpen}
-                    closeFunction={closePopup}
-                    columns={columns}
-                    devices={devices}
-                    configuration={configuration}
-                    setConfiguration={setConfiguration}
-                    submitFunction={(type == 0 ? addWidget : updateWidget)}
-                    type={type}
-                    oldWidget={type == 1 ? selectedWidget : {}}
-                />
-            ) : (visiblePopup == 3 ? (
-                <AddParameterTablePopup
-                    isOpen={isOpen}
-                    closeFunction={closePopup}
-                    columns={columns}
-                    devices={devices}
-                    configuration={configuration}
-                    setConfiguration={setConfiguration}
-                    submitFunction={(type == 0 ? addWidget : updateWidget)}
-                    type={type}
-                    oldWidget={type == 1 ? selectedWidget : {}}
-                />
-            ) : (visiblePopup == 4 ? (
-                <AddToggleWidgetPopup
-                    isOpen={isOpen}
-                    closeFunction={closePopup}
-                    columns={columns}
-                    devices={devices}
-                    configuration={configuration}
-                    setConfiguration={setConfiguration}
-                    submitFunction={(type == 0 ? addWidget : updateWidget)}
-                    type={type}
-                    oldWidget={type == 1 ? selectedWidget : {}}
-                />
-            ) : (visiblePopup == 5 ? (
-                <AddGaugeWidgetPopup
-                    isOpen={isOpen}
-                    closeFunction={closePopup}
-                    columns={columns}
-                    devices={devices}
-                    configuration={configuration}
-                    setConfiguration={setConfiguration}
-                    submitFunction={(type == 0 ? addWidget : updateWidget)}
-                    type={type}
-                    oldWidget={type == 1 ? selectedWidget : {}}
-                />
-            ) : null)))
-            )}
+            {renderPopup()}
         </>
     )
 }
