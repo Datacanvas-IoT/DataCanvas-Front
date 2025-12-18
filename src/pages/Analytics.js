@@ -118,7 +118,8 @@ export default function Analytics() {
                             clm_id: clm.clm_id,
                             clm_name: clm.clm_name,
                             data_type: clm.data_type,
-                            tbl_id: tbl.tbl_id
+                            tbl_id: tbl.tbl_id,
+                            is_system_column: clm.is_system_column
                         };
                         columnsArray.push(columnDetails);
                     }
