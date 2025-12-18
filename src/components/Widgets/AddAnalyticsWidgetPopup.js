@@ -34,6 +34,16 @@ const AddAnalyticsWidgetPopup = ({
         }
     }, [isOpen])
 
+    useEffect(() => {
+        if (!isOpen) {
+            setWidgetName('');
+            setWidgetType(0);
+            setDataset(0);
+            setParameter(0);
+            setDevice(0);
+        }
+    }, [isOpen])
+
     const handleSubmit = () => {
         // Validation
         if (widgetName == '') {
@@ -66,15 +76,7 @@ const AddAnalyticsWidgetPopup = ({
         }
 
         if (type == 0) {
-            // Add widget
             submitFunction(object);
-            // Clear fields
-            setWidgetName('');
-            setWidgetType(0);
-            setDataset(0);
-            setParameter(0);
-            setDevice(0);
-
             closeFunction();
         } else {
             // Edit widget
@@ -118,7 +120,13 @@ const AddAnalyticsWidgetPopup = ({
                     <SelectBox value={parameter} onChange={(e) => { setParameter(e.target.value) }}>
                         <option value={0}>Select Parameter</option>
                         {columns.map((column) => {
-                            if (column.clm_name == 'id' || column.clm_name == 'device' || column.data_type == 3 || column.data_type == 4 || column.tbl_id != dataset) {
+                            if (column.tbl_id != dataset) {
+                                return null;
+                            }
+                            if (column.is_system_column === true) {
+                                return null;
+                            }
+                            if (![1, 2].includes(column.data_type)) {
                                 return null;
                             }
                             return (

@@ -15,8 +15,8 @@ const DashboardAnalyticsCard = ({
     updateWidget = () => { },
 }) => {
     const [refreshing, setRefreshing] = useState(false);
-    const [value, setValue] = useState(widget.latest_value);
-    const [timestamp, setTimestamp] = useState(widget.latest_value_timestamp);
+    const [value, setValue] = useState('-');
+    const [timestamp, setTimestamp] = useState('-');
 
     const [filterVisible, setFilterVisible] = useState(false);
     const [filterType, setFilterType] = useState(0); // 0 - Filter by data points, 1 - Filter by time
@@ -36,42 +36,30 @@ const DashboardAnalyticsCard = ({
 
     const loadValue = async () => {
         setRefreshing(true);
-        let object = {
-            dataset: widget.dataset,
-            parameter: columns.find((col) => col.clm_id == widget.parameter).clm_name,
-            device: widget.device,
-            analyticType: widget.widget_type,
-            filterMethod: Number(filterType),
-            filterValue: Number(filterValue)
-        }
-
         try {
-            let response = await axios.post(`${process.env.REACT_APP_ANALYTICS_API_URL}/data/`, object)
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_URL}/data/get/analytic-widget/${widget.id}?filterMethod=${Number(filterType)}&filterValue=${Number(filterValue)}`,
+                {
+                    headers: {
+                        authorization: localStorage.getItem("auth-token"),
+                    },
+                }
+            );
 
-            console.log(filterValue);
             if (response.status == 200) {
                 setRefreshing(false);
-                console.log(response.data);
                 setValue(response.data.result);
                 setTimestamp(new Date().toISOString());
-                updateLatestValue(response.data.result);
+            } else {
+                setValue("Error");
+                setRefreshing(false);
+                setTimestamp("Unable to fetch")
             }
         } catch (err) {
             console.log(err);
+            setValue("Error");
             setRefreshing(false);
-        }
-    }
-
-    const updateLatestValue = (value) => {
-        try {
-            axios.put(`${process.env.REACT_APP_API_URL}/analytic_widget/value/`, {
-                latest_value: value,
-                widget_id: widget.id
-            }).then((response) => {
-                console.log(response);
-            })
-        } catch (err) {
-            console.log(err);
+            setTimestamp("Unable to fetch")
         }
     }
 
