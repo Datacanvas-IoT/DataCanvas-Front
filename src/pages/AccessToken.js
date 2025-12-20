@@ -86,8 +86,22 @@ const AccessToken = () => {
     };
 
     const handleEditToken = (token) => {
-        // TODO: Implement edit functionality
-        console.log('Edit token:', token);
+        if (!token?.access_key_id) return;
+        navigate(`/accesstoken/${token.access_key_id}`, {
+            state: { access_key_id: token.access_key_id, project_id: projectID },
+        });
+    };
+
+    // Temporary: Open details page by entering an Access Key ID
+    const handleOpenById = () => {
+        const input = window.prompt('Enter Access Key ID');
+        if (!input) return;
+        const id = parseInt(input);
+        if (!Number.isFinite(id)) {
+            toast.error('Invalid Access Key ID');
+            return;
+        }
+        navigate(`/accesstoken/${id}`, { state: { access_key_id: id, project_id: projectID } });
     };
 
     const handleDeleteClick = (token) => {
@@ -144,13 +158,16 @@ const AccessToken = () => {
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens`}>
             {/* Header with Add Button */}
             <div className="flex flex-row justify-end px-7 sm:px-10 mt-6 sm:mt-2">
-                {accessTokens.length > 0 && (
-                    <PillButton
-                        text="Generate New Token"
-                        icon={FaPlusCircle}
-                        onClick={handleGenerateNewToken}
-                    />
-                )}
+                <div className="flex gap-3">
+                    <PillButton text="Open By ID" onClick={handleOpenById} />
+                    {accessTokens.length > 0 && (
+                        <PillButton
+                            text="Generate New Token"
+                            icon={FaPlusCircle}
+                            onClick={handleGenerateNewToken}
+                        />
+                    )}
+                </div>
             </div>
 
             {/* Access Tokens List */}
