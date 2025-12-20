@@ -7,6 +7,7 @@ import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import Spinner from '../components/Spinner';
 import AccessTokenCard from '../components/cards/AccessTokenCard';
+import DeleteConfirmationPopup from '../components/DeleteConfirmationPopup';
 import accessTokenService from '../services/accessTokenService';
 
 const AccessToken = () => {
@@ -18,6 +19,9 @@ const AccessToken = () => {
 
     // Access tokens list
     const [accessTokens, setAccessTokens] = useState([]);
+
+    const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+    const [tokenToDelete, setTokenToDelete] = useState(null);
 
     // Get project_id from location state
     useEffect(() => {
@@ -86,11 +90,25 @@ const AccessToken = () => {
         console.log('Edit token:', token);
     };
 
-    const handleDeleteToken = async (accessKeyId) => {
+    const handleDeleteClick = (token) => {
+        setTokenToDelete(token);
+        setIsDeletePopupOpen(true);
+    };
+
+    const handleCloseDeletePopup = () => {
+        setIsDeletePopupOpen(false);
+        setTokenToDelete(null);
+    };
+
+    // Confirm and delete token
+    const handleConfirmDelete = async () => {
+        if (!tokenToDelete) return;
+
+        setIsDeletePopupOpen(false);
         setLoading(true);
 
         try {
-            const response = await accessTokenService.deleteAccessKey(accessKeyId);
+            const response = await accessTokenService.deleteAccessKey(tokenToDelete.access_key_id);
 
             if (response.status === 200) {
                 toast.success('Token deleted successfully!');
@@ -118,6 +136,7 @@ const AccessToken = () => {
             }
         } finally {
             setLoading(false);
+            setTokenToDelete(null);
         }
     };
 
@@ -154,7 +173,7 @@ const AccessToken = () => {
                                     key={token.access_key_id || index}
                                     token={token}
                                     onEdit={handleEditToken}
-                                    onDelete={handleDeleteToken}
+                                    onDelete={() => handleDeleteClick(token)}
                                 />
                             );
                         })}
@@ -175,6 +194,16 @@ const AccessToken = () => {
                 theme="dark"
             />
             <Spinner isVisible={loading} />
+
+            {/* Delete Confirmation Popup */}
+            <DeleteConfirmationPopup
+                isOpen={isDeletePopupOpen}
+                onClose={handleCloseDeletePopup}
+                onConfirm={handleConfirmDelete}
+                title="Delete Access Token"
+                itemName={tokenToDelete?.access_key_name || 'this token'}
+                warningMessage="This action cannot be undone. Any applications using this token will lose access."
+            />
         </SidebarLayout>
     );
 };
