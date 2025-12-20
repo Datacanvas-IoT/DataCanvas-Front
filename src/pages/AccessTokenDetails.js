@@ -6,11 +6,20 @@ import 'react-toastify/dist/ReactToastify.css';
 import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import TextBox from '../components/input/TextBox';
+import InsightCard from '../components/cards/InsightCard';
+import SelectBox from '../components/input/SelectBox';
+import RectangularRowCard from '../components/cards/RectangularCard';
 import DeviceSelection from '../components/input/DeviceSelection';
 import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
 import accessTokenService from '../services/accessTokenService';
-import { FaTrash, FaCheck } from 'react-icons/fa';
+import { FaTrash, FaCheck, FaCog } from 'react-icons/fa';
+
+
+const GreenTrashIcon = (props) => {
+    const cls = props.className ? props.className + ' text-green' : 'text-green';
+    return <FaTrash {...props} className={cls} />;
+};
 
 const AccessTokenDetails = () => {
     const navigate = useNavigate();
@@ -31,8 +40,18 @@ const AccessTokenDetails = () => {
     const [devices, setDevices] = useState([]);
     const [selectedDevices, setSelectedDevices] = useState([]);
     const [domainSites, setDomainSites] = useState(['']);
+    const [devicesSelectVal, setDevicesSelectVal] = useState(-1);
+    const [domainsSelectVal, setDomainsSelectVal] = useState(-1);
+    const [showAllDevices, setShowAllDevices] = useState(false);
+    const [showAllDomains, setShowAllDomains] = useState(false);
 
-    // Initialize project and access key IDs
+
+    const [origTokenName, setOrigTokenName] = useState('');
+    const [origExpirationDate, setOrigExpirationDate] = useState(null);
+    const [origSelectedDevices, setOrigSelectedDevices] = useState([]);
+    const [origDomainSites, setOrigDomainSites] = useState(['']);
+
+
     useEffect(() => {
         try {
             const storedProjectId = localStorage.getItem('project_id');
@@ -47,28 +66,41 @@ const AccessTokenDetails = () => {
         }
     }, []);
 
-    // Load token details and project devices
+
     useEffect(() => {
         const load = async () => {
             if (!accessKeyId || projectID === -1) return;
             setLoading(true);
             try {
-                // Fetch token details
+
                 const res = await accessTokenService.getAccessKeyById(accessKeyId);
                 const data = res.data;
 
-                setTokenName(data.access_key_name ?? '');
-                setExpirationDate(data.expiration_date ?? null);
-                setLastUseTime(data.access_key_last_use_time ?? null);
-                setIsExpired(Boolean(data.is_expired));
-                setSelectedDevices(Array.isArray(data.device_ids) ? data.device_ids : []);
-                setDomainSites(
+                const name = data.access_key_name ?? '';
+                const exp = data.expiration_date ?? null;
+                const lastUse = data.access_key_last_use_time ?? null;
+                const isExp = Boolean(data.is_expired);
+                const devs = Array.isArray(data.device_ids) ? data.device_ids : [];
+                const domainsArr = (
                     Array.isArray(data.access_key_domain_names) && data.access_key_domain_names.length > 0
                         ? data.access_key_domain_names
-                        : ['']
+                    : ['']
                 );
 
-                // Fetch devices in project for display
+                setTokenName(name);
+                setExpirationDate(exp);
+                setLastUseTime(lastUse);
+                setIsExpired(isExp);
+                setSelectedDevices(devs);
+                setDomainSites(domainsArr);
+
+
+                setOrigTokenName(name);
+                setOrigExpirationDate(exp);
+                setOrigSelectedDevices(devs);
+                setOrigDomainSites(domainsArr);
+
+
                 const devRes = await accessTokenService.getDevicesByProjectId(projectID);
                 setDevices(devRes.data || []);
             } catch (err) {
@@ -121,6 +153,47 @@ const AccessTokenDetails = () => {
         setDomainSites((prev) => prev.filter((_, i) => i !== index));
     };
 
+    const handleRemoveDevice = (deviceId) => {
+        setSelectedDevices((prev) => prev.filter((id) => id !== deviceId));
+    };
+
+    const handleDevicesDropdownChange = (e) => {
+        const val = e.target.value;
+        if (val === 'all') {
+            handleSelectAllDevices();
+            setShowAllDevices(true);
+        } else if (val === 'none') {
+            setSelectedDevices([]);
+            setShowAllDevices(false);
+        } else if (val === 'two') {
+            setShowAllDevices(false);
+        }
+        setDevicesSelectVal(-1);
+    };
+
+    const handleDomainsDropdownChange = (e) => {
+        const val = e.target.value;
+        if (val === 'all') {
+            setShowAllDomains(true);
+        } else if (val === 'none') {
+            setDomainSites(['']);
+            setShowAllDomains(false);
+        } else if (val === 'two') {
+            setShowAllDomains(false);
+        }
+        setDomainsSelectVal(-1);
+    };
+
+    const handleCancel = () => {
+        setTokenName(origTokenName);
+        setExpirationDate(origExpirationDate);
+        setSelectedDevices(origSelectedDevices);
+        setDomainSites(origDomainSites);
+        setShowAllDevices(false);
+        setShowAllDomains(false);
+        toast.info('Changes reverted');
+    };
+
     const handleDeleteToken = async () => {
         if (!accessKeyId) return;
         setLoading(true);
@@ -137,7 +210,6 @@ const AccessTokenDetails = () => {
         }
     };
 
-    // Helper for date input formatting
     const toInputDate = (d) => {
         try {
             const dt = new Date(d);
@@ -187,55 +259,131 @@ const AccessTokenDetails = () => {
                                 placeholder="Select date"
                                 textAlign="left"
                                 width="w-2/3 md:w-1/4"
+                                disabled
                             />
                         </div>
+                        </div>
 
-                        {/* Critical Settings: Devices */}
-                        <DeviceSelection
-                            devices={devices}
-                            selectedDevices={selectedDevices}
-                            onDeviceToggle={handleDeviceToggle}
-                            onSelectAll={handleSelectAllDevices}
-                        />
-
-                        {/* Domains */}
-                        <DomainSitesInput
-                            domainSites={domainSites}
-                            onSiteChange={handleSiteChange}
-                            onAddSite={handleAddSite}
-                            onRemoveSite={handleRemoveSite}
-                        />
-
-                        {/* Save - Backend update will be added later */}
-                        <div className="flex justify-end">
-                            <PillButton
-                                text="Update & Save"
-                                onClick={() => toast.info('Update route will be added by backend')}
+                    <div className="lg:col-span-1 flex flex-col items-start -mt-2  ">
+                        
+                            <InsightCard
+                                title={isExpired ? 'Expired' : 'Active'}
+                                subtitle="Current status of Token"
+                                icon={FaCheck}
+                                textSize="lg"
+                                variant={isExpired ? 'danger' : 'default'}
                             />
-                        </div>
-                    </div>
+                        
 
-                    {/* Right - Status card and delete */}
-                    <div className="lg:col-span-1">
-                        <div className="bg-black3 rounded-xl p-5 border border-gray1 border-opacity-20 flex items-start justify-between">
-                            <div>
-                                <div className={`text-3xl font-semibold ${isExpired ? 'text-red' : 'text-green'}`}>
-                                    {isExpired ? 'Expired' : 'Active'}
-                                </div>
-                                <div className="text-gray1 text-sm mt-2">Current status of Token</div>
+                        {isExpired && (
+                            <div className="mt-3 w-full sm:w-[300px]">
+                                <PillButton
+                                    text="Extend Expiration Date"
+                                    onClick={() => toast.info('Extend expiration flow will be added')}
+                                    icon={FaCog}
+                                />
                             </div>
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isExpired ? 'bg-red bg-opacity-20' : 'bg-green bg-opacity-20'}`}>
-                                <FaCheck className={`${isExpired ? 'text-red' : 'text-green'}`} />
-                            </div>
-                        </div>
+                        )}
 
-                        <div className="mt-4 flex justify-end">
+                        <div className="mt-3 w-full sm:w-[300px] mx-8">
                             <PillButton
                                 text="Delete Access Token"
                                 onClick={handleDeleteToken}
                                 color="red"
                                 icon={FaTrash}
                             />
+                        </div>
+                    </div>
+
+                    <div className="col-span-1 lg:col-span-3">
+                        <div className="border-t border-gray1 border-opacity-80 w-full mt-2"></div>
+                    </div>
+
+
+                    <div className="col-span-1 lg:col-span-3 my-4">
+                        <div className="text-gray2 text-base font-semibold mx-2 mb-4">Critical Settings</div>
+
+                        {/* Devices Section */}
+                        <div className="mx-4 mb-6">
+                            <div className="text-sm text-gray2 font-semibold mb-2">Devices</div>
+                            <div className="space-y-2">
+                                {(() => {
+                                    const selectedList = devices.filter(d => selectedDevices.includes(d.device_id));
+                                    const visible = showAllDevices ? selectedList : selectedList.slice(0, 2);
+                                    if (visible.length === 0) {
+                                        return (
+                                            <div className="text-gray1 text-sm py-3">No devices selected</div>
+                                        );
+                                    }
+                                    return visible.map((d) => (
+                                        <RectangularRowCard
+                                            key={d.device_id}
+                                            title={d.device_name}
+                                            icon={GreenTrashIcon}
+                                            onClick={() => handleRemoveDevice(d.device_id)}
+                                        />
+                                    ));
+                                })()}
+                            </div>
+                            <div className="flex justify-center my-3">
+                                <SelectBox
+                                    value={devicesSelectVal}
+                                    onChange={handleDevicesDropdownChange}
+                                    width="w-44"
+                                    mt="mt-0"
+                                >
+                                    <option value={-1}>All Devices</option>
+                                    <option value="all">Select All</option>
+                                    <option value="none">Deselect All</option>
+                                    <option value="two">Show Only Two</option>
+                                </SelectBox>
+                            </div>
+                        </div>
+
+                        {/* Domains Section */}
+                        <div className="mx-4 mb-6">
+                            <div className="text-sm text-gray2 font-semibold mb-2">Domains</div>
+                            <div className="space-y-2">
+                                {(() => {
+                                    const validSites = domainSites.filter(s => (s || '').trim() !== '');
+                                    const visibleSites = showAllDomains ? validSites : validSites.slice(0, 2);
+                                    if (visibleSites.length === 0) {
+                                        return (
+                                            <div className="text-gray1 text-sm py-3">No domains added</div>
+                                        );
+                                    }
+                                    return visibleSites.map((s, idx) => (
+                                        <RectangularRowCard
+                                            key={`${s}-${idx}`}
+                                            title={s}
+                                            icon={GreenTrashIcon}
+                                            onClick={() => {
+                                                const indexInFull = domainSites.findIndex(x => x === s);
+                                                if (indexInFull !== -1) handleRemoveSite(indexInFull);
+                                            }}
+                                        />
+                                    ));
+                                })()}
+                            </div>
+                            <div className="flex justify-center my-3">
+                                <SelectBox
+                                    value={domainsSelectVal}
+                                    onChange={handleDomainsDropdownChange}
+                                    width="w-44"
+                                    mt="mt-0"
+                                >
+                                    <option value={-1}>All Domains</option>
+                                    <option value="all">Show All</option>
+                                    <option value="two">Show Only Two</option>
+                                    <option value="none">Clear All</option>
+                                </SelectBox>
+                            </div>
+                        </div>
+
+
+                        <div className="flex items-center justify-between mx-4 mb-4">
+                            <PillButton text="Cancel" onClick={handleCancel} />
+                            <PillButton text="Update & Save" onClick={() => toast.info('Update route will be added by backend')} />
                         </div>
                     </div>
                 </div>
