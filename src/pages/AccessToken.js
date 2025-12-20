@@ -144,7 +144,7 @@ const AccessToken = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                         {accessTokens.map((token, index) => {
                             if (!token.access_key_id) {
                                 console.warn('AccessToken: Missing access_key_id for token at index', index, token);
