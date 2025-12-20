@@ -5,10 +5,12 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
+import TextBox from '../components/input/TextBox';
 import DeviceSelection from '../components/input/DeviceSelection';
 import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
 import accessTokenService from '../services/accessTokenService';
+import { FaTrash, FaCheck } from 'react-icons/fa';
 
 const AccessTokenDetails = () => {
     const navigate = useNavigate();
@@ -135,62 +137,106 @@ const AccessTokenDetails = () => {
         }
     };
 
+    // Helper for date input formatting
+    const toInputDate = (d) => {
+        try {
+            const dt = new Date(d);
+            if (Number.isNaN(dt.getTime())) return '';
+            const yyyy = dt.getFullYear();
+            const mm = String(dt.getMonth() + 1).padStart(2, '0');
+            const dd = String(dt.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        } catch { return ''; }
+    };
+
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens > Settings`}>
             <div className="px-7 sm:px-10 mt-6 mb-28">
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        <h1 className="text-2xl font-semibold text-green">Token Settings</h1>
-                        <p className="text-gray1 text-sm">General Settings </p>
-                        <p className="text-gray1 text-xs mt-1">
-                            Status: {isExpired ? 'Expired' : 'Active'}
-                        </p>
-                    </div>
-                    <div className="flex gap-3">
-                        <PillButton text="Delete Access Token" onClick={handleDeleteToken} />
-                    </div>
-                </div>
+                <h1 className="text-2xl font-semibold text-green mb-4">Token Settings</h1>
 
-                <div className="max-w-2xl">
-                    {/* General Settings */}
-                    <div className="mb-6">
-                        <label className="text-sm text-gray2 font-semibold mb-1 block">Token Name</label>
-                        <input
-                            type="text"
-                            value={tokenName}
-                            onChange={(e) => setTokenName(e.target.value)}
-                            className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-full px-4 py-1 text-gray2 focus:outline-none focus:border-green"
-                        />
-                        <div className="mt-3 text-gray1 text-xs">
-                            Valid till: {expirationDate ? new Date(expirationDate).toLocaleDateString() : '—'}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+                    <div className="lg:col-span-2">
+                        <div className="text-m text-gray2 font-semibold mx-2 mt-8">General Settings</div>
+
+
+                        <div className='flex flex-row ml-8 mt-1 my-4'>
+                            <div className='flex flex-col w-1/4 md:w-1/6'>
+                                <div className="text-sm md:text-md text-gray1 font-semibold mt-2">Token Name</div>
+                            </div>
+                            <TextBox
+                                value={tokenName}
+                                onChange={(e) => setTokenName(e.target.value)}
+                                type="text"
+                                placeholder="Token name"
+                                maxLength={50}
+                                textAlign="left"
+                                width="w-2/3 md:w-1/3"
+                            />
                         </div>
-                        <div className="mt-1 text-gray1 text-xs">
-                            Last used: {lastUseTime ? new Date(lastUseTime).toLocaleString() : '—'}
+
+            
+                        <div className="flex flex-row ml-8 mt-4 my-4">
+                            <div className="flex flex-col w-1/4 md:w-1/6">
+                                <div className="text-sm md:text-md text-gray1 font-semibold mt-2">Expiration Date</div>
+                            </div>
+                            <TextBox
+                                value={expirationDate ? toInputDate(expirationDate) : ''}
+                                onChange={(e) => setExpirationDate(e.target.value)}
+                                type="date"
+                                placeholder="Select date"
+                                textAlign="left"
+                                width="w-2/3 md:w-1/4"
+                            />
+                        </div>
+
+                        {/* Critical Settings: Devices */}
+                        <DeviceSelection
+                            devices={devices}
+                            selectedDevices={selectedDevices}
+                            onDeviceToggle={handleDeviceToggle}
+                            onSelectAll={handleSelectAllDevices}
+                        />
+
+                        {/* Domains */}
+                        <DomainSitesInput
+                            domainSites={domainSites}
+                            onSiteChange={handleSiteChange}
+                            onAddSite={handleAddSite}
+                            onRemoveSite={handleRemoveSite}
+                        />
+
+                        {/* Save - Backend update will be added later */}
+                        <div className="flex justify-end">
+                            <PillButton
+                                text="Update & Save"
+                                onClick={() => toast.info('Update route will be added by backend')}
+                            />
                         </div>
                     </div>
 
-                    {/* Critical Settings: Devices */}
-                    <DeviceSelection
-                        devices={devices}
-                        selectedDevices={selectedDevices}
-                        onDeviceToggle={handleDeviceToggle}
-                        onSelectAll={handleSelectAllDevices}
-                    />
+                    {/* Right - Status card and delete */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-black3 rounded-xl p-5 border border-gray1 border-opacity-20 flex items-start justify-between">
+                            <div>
+                                <div className={`text-3xl font-semibold ${isExpired ? 'text-red' : 'text-green'}`}>
+                                    {isExpired ? 'Expired' : 'Active'}
+                                </div>
+                                <div className="text-gray1 text-sm mt-2">Current status of Token</div>
+                            </div>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isExpired ? 'bg-red bg-opacity-20' : 'bg-green bg-opacity-20'}`}>
+                                <FaCheck className={`${isExpired ? 'text-red' : 'text-green'}`} />
+                            </div>
+                        </div>
 
-                    {/* Domains */}
-                    <DomainSitesInput
-                        domainSites={domainSites}
-                        onSiteChange={handleSiteChange}
-                        onAddSite={handleAddSite}
-                        onRemoveSite={handleRemoveSite}
-                    />
-
-                    {/* Save - Backend update will be added later */}
-                    <div className="flex justify-end">
-                        <PillButton
-                            text="Update & Save"
-                            onClick={() => toast.info('Update route will be added by backend')}
-                        />
+                        <div className="mt-4 flex justify-end">
+                            <PillButton
+                                text="Delete Access Token"
+                                onClick={handleDeleteToken}
+                                color="red"
+                                icon={FaTrash}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,3 +248,5 @@ const AccessTokenDetails = () => {
 };
 
 export default AccessTokenDetails;
+
+
