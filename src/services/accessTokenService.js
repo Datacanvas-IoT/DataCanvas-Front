@@ -22,7 +22,7 @@ const accessTokenService = {
      */
     getAccessKeysByProjectId: async (projectId) => {
         const response = await axios.get(
-            `${API_URL}/access-key?project_id=${projectId}`,
+            `${API_URL}/access-keys?project_id=${projectId}`,
             {
                 headers: getAuthHeaders(),
             }
@@ -37,7 +37,7 @@ const accessTokenService = {
      */
     deleteAccessKey: async (accessKeyId) => {
         const response = await axios.delete(
-            `${API_URL}/access-key/${accessKeyId}`,
+            `${API_URL}/access-keys/${accessKeyId}`,
             {
                 headers: getAuthHeaders(),
             }
@@ -71,7 +71,7 @@ const accessTokenService = {
      */
     createAccessKey: async (accessKeyData) => {
         const response = await axios.post(
-            `${API_URL}/access-key`,
+            `${API_URL}/access-keys`,
             accessKeyData,
             {
                 headers: getAuthHeaders(),
