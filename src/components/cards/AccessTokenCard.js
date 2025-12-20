@@ -1,5 +1,5 @@
-import React from "react";
-import { FaTrash, FaPencilAlt } from "react-icons/fa";
+import React from 'react';
+import { FaTrash, FaPencilAlt } from 'react-icons/fa';
 
 const AccessTokenCard = ({ token, onEdit, onDelete }) => {
   return (
