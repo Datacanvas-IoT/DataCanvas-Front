@@ -17,8 +17,9 @@ import { FaTrash, FaCheck, FaCog } from 'react-icons/fa';
 
 
 const GreenTrashIcon = (props) => {
-    const cls = props.className ? props.className + ' text-green' : 'text-green';
-    return <FaTrash {...props} className={cls} />;
+    const { className, ...rest } = props;
+    const cls = className ? className + ' text-green text-sm' : 'text-green text-sm';
+    return <FaTrash {...rest} className={cls} />;
 };
 
 const AccessTokenDetails = () => {
@@ -40,8 +41,8 @@ const AccessTokenDetails = () => {
     const [devices, setDevices] = useState([]);
     const [selectedDevices, setSelectedDevices] = useState([]);
     const [domainSites, setDomainSites] = useState(['']);
-    const [devicesSelectVal, setDevicesSelectVal] = useState(-1);
-    const [domainsSelectVal, setDomainsSelectVal] = useState(-1);
+    const [devicesSelectVal, setDevicesSelectVal] = useState('');
+    const [domainsSelectVal, setDomainsSelectVal] = useState('');
     const [showAllDevices, setShowAllDevices] = useState(false);
     const [showAllDomains, setShowAllDomains] = useState(false);
 
@@ -128,7 +129,7 @@ const AccessTokenDetails = () => {
         load();
     }, [accessKeyId, projectID, navigate]);
 
-    // Handlers reused from Generate page
+
     const handleDeviceToggle = (deviceId) => {
         setSelectedDevices((prev) =>
             prev.includes(deviceId) ? prev.filter((id) => id !== deviceId) : [...prev, deviceId]
@@ -160,28 +161,21 @@ const AccessTokenDetails = () => {
     const handleDevicesDropdownChange = (e) => {
         const val = e.target.value;
         if (val === 'all') {
-            handleSelectAllDevices();
             setShowAllDevices(true);
-        } else if (val === 'none') {
-            setSelectedDevices([]);
-            setShowAllDevices(false);
-        } else if (val === 'two') {
+        } else {
             setShowAllDevices(false);
         }
-        setDevicesSelectVal(-1);
+        setDevicesSelectVal('');
     };
 
     const handleDomainsDropdownChange = (e) => {
         const val = e.target.value;
         if (val === 'all') {
             setShowAllDomains(true);
-        } else if (val === 'none') {
-            setDomainSites(['']);
-            setShowAllDomains(false);
-        } else if (val === 'two') {
+        } else {
             setShowAllDomains(false);
         }
-        setDomainsSelectVal(-1);
+        setDomainsSelectVal('');
     };
 
     const handleCancel = () => {
@@ -264,8 +258,8 @@ const AccessTokenDetails = () => {
                         </div>
                         </div>
 
-                    <div className="lg:col-span-1 flex flex-col items-start -mt-2  ">
-                        
+                    <div className="lg:col-span-1 flex flex-col items-stretch -mt-2">
+                        <div className="w-full">
                             <InsightCard
                                 title={isExpired ? 'Expired' : 'Active'}
                                 subtitle="Current status of Token"
@@ -273,10 +267,10 @@ const AccessTokenDetails = () => {
                                 textSize="lg"
                                 variant={isExpired ? 'danger' : 'default'}
                             />
-                        
+                        </div>
 
                         {isExpired && (
-                            <div className="mt-3 w-full sm:w-[300px]">
+                            <div className="mt-3 w-full mx-12">
                                 <PillButton
                                     text="Extend Expiration Date"
                                     onClick={() => toast.info('Extend expiration flow will be added')}
@@ -285,7 +279,7 @@ const AccessTokenDetails = () => {
                             </div>
                         )}
 
-                        <div className="mt-3 w-full sm:w-[300px] mx-8">
+                        <div className="mt-3 w-full mx-12">
                             <PillButton
                                 text="Delete Access Token"
                                 onClick={handleDeleteToken}
@@ -303,10 +297,9 @@ const AccessTokenDetails = () => {
                     <div className="col-span-1 lg:col-span-3 my-4">
                         <div className="text-gray2 text-base font-semibold mx-2 mb-4">Critical Settings</div>
 
-                        {/* Devices Section */}
-                        <div className="mx-4 mb-6">
-                            <div className="text-sm text-gray2 font-semibold mb-2">Devices</div>
-                            <div className="space-y-2">
+                        <div className="mx-4 mb-6 ">
+                            <div className="text-md text-gray2 font-semibold mb-2">Devices</div>
+                            <div className="space-y-5">
                                 {(() => {
                                     const selectedList = devices.filter(d => selectedDevices.includes(d.device_id));
                                     const visible = showAllDevices ? selectedList : selectedList.slice(0, 2);
@@ -332,17 +325,14 @@ const AccessTokenDetails = () => {
                                     width="w-44"
                                     mt="mt-0"
                                 >
-                                    <option value={-1}>All Devices</option>
-                                    <option value="all">Select All</option>
-                                    <option value="none">Deselect All</option>
-                                    <option value="two">Show Only Two</option>
+                                    <option value="all">All Devices</option>
                                 </SelectBox>
                             </div>
                         </div>
 
-                        {/* Domains Section */}
-                        <div className="mx-4 mb-6">
-                            <div className="text-sm text-gray2 font-semibold mb-2">Domains</div>
+
+                        <div className="mx-4 mb-10">
+                            <div className="text-md text-gray2 font-semibold mb-2">Domains</div>
                             <div className="space-y-2">
                                 {(() => {
                                     const validSites = domainSites.filter(s => (s || '').trim() !== '');
@@ -372,16 +362,13 @@ const AccessTokenDetails = () => {
                                     width="w-44"
                                     mt="mt-0"
                                 >
-                                    <option value={-1}>All Domains</option>
-                                    <option value="all">Show All</option>
-                                    <option value="two">Show Only Two</option>
-                                    <option value="none">Clear All</option>
+                                    <option value="all">All Domains</option>
                                 </SelectBox>
                             </div>
                         </div>
 
 
-                        <div className="flex items-center justify-between mx-4 mb-4">
+                        <div className="flex items-center justify-between mx-4 mt-10">
                             <PillButton text="Cancel" onClick={handleCancel} />
                             <PillButton text="Update & Save" onClick={() => toast.info('Update route will be added by backend')} />
                         </div>
