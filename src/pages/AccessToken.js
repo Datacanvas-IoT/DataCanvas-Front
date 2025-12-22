@@ -90,19 +90,7 @@ const AccessToken = () => {
         navigate(`/accesstoken/${token.access_key_id}`, {
             state: { access_key_id: token.access_key_id, project_id: projectID },
         });
-    };
-
-    // Temporary: Open details page by entering an Access Key ID
-    const handleOpenById = () => {
-        const input = window.prompt('Enter Access Key ID');
-        if (!input) return;
-        const id = parseInt(input);
-        if (!Number.isFinite(id)) {
-            toast.error('Invalid Access Key ID');
-            return;
-        }
-        navigate(`/accesstoken/${id}`, { state: { access_key_id: id, project_id: projectID } });
-    };
+    };  
 
     const handleDeleteClick = (token) => {
         setTokenToDelete(token);
@@ -159,7 +147,6 @@ const AccessToken = () => {
             {/* Header with Add Button */}
             <div className="flex flex-row justify-end px-7 sm:px-10 mt-6 sm:mt-2">
                 <div className="flex gap-3">
-                    <PillButton text="Open By ID" onClick={handleOpenById} />
                     {accessTokens.length > 0 && (
                         <PillButton
                             text="Generate New Token"

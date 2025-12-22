@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import TextBox from '../components/input/TextBox';
@@ -14,7 +13,6 @@ import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
 import accessTokenService from '../services/accessTokenService';
 import { FaTrash, FaCheck, FaCog } from 'react-icons/fa';
-
 
 const GreenTrashIcon = (props) => {
     const { className, ...rest } = props;
@@ -46,12 +44,10 @@ const AccessTokenDetails = () => {
     const [showAllDevices, setShowAllDevices] = useState(false);
     const [showAllDomains, setShowAllDomains] = useState(false);
 
-
     const [origTokenName, setOrigTokenName] = useState('');
     const [origExpirationDate, setOrigExpirationDate] = useState(null);
     const [origSelectedDevices, setOrigSelectedDevices] = useState([]);
     const [origDomainSites, setOrigDomainSites] = useState(['']);
-
 
     useEffect(() => {
         try {
@@ -66,7 +62,6 @@ const AccessTokenDetails = () => {
             navigate('/login');
         }
     }, []);
-
 
     useEffect(() => {
         const load = async () => {
@@ -95,12 +90,10 @@ const AccessTokenDetails = () => {
                 setSelectedDevices(devs);
                 setDomainSites(domainsArr);
 
-
                 setOrigTokenName(name);
                 setOrigExpirationDate(exp);
                 setOrigSelectedDevices(devs);
                 setOrigDomainSites(domainsArr);
-
 
                 const devRes = await accessTokenService.getDevicesByProjectId(projectID);
                 setDevices(devRes.data || []);
