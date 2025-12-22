@@ -8,8 +8,6 @@ import TextBox from '../components/input/TextBox';
 import InsightCard from '../components/cards/InsightCard';
 import SelectBox from '../components/input/SelectBox';
 import RectangularRowCard from '../components/cards/RectangularCard';
-import DeviceSelection from '../components/input/DeviceSelection';
-import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
 import accessTokenService from '../services/accessTokenService';
 import { FaTrash, FaCheck, FaCog } from 'react-icons/fa';
@@ -52,7 +50,12 @@ const AccessTokenDetails = () => {
     useEffect(() => {
         try {
             const storedProjectId = localStorage.getItem('project_id');
-            if (storedProjectId) setProjectID(parseInt(storedProjectId));
+                if (storedProjectId) {
+                    setProjectID(parseInt(storedProjectId));
+                } else {
+                    navigate('/projects');
+                    return;
+                }
 
             const fromState = state?.access_key_id;
             const parsedParam = paramAccessKeyId ? parseInt(paramAccessKeyId) : null;
@@ -110,9 +113,11 @@ const AccessTokenDetails = () => {
                         break;
                     case 404:
                         toast.error(msg || 'Access key not found');
+                        navigate('/accesstoken', { state: { project_id: projectID } });
                         break;
                     default:
                         toast.error(msg || 'Failed to load access key details');
+                        navigate('/accesstoken', { state: { project_id: projectID } });
                         break;
                 }
             } finally {
@@ -128,6 +133,7 @@ const AccessTokenDetails = () => {
             prev.includes(deviceId) ? prev.filter((id) => id !== deviceId) : [...prev, deviceId]
         );
     };
+
     const handleSelectAllDevices = () => {
         if (selectedDevices.length === devices.length) {
             setSelectedDevices([]);
@@ -135,14 +141,17 @@ const AccessTokenDetails = () => {
             setSelectedDevices(devices.map((d) => d.device_id));
         }
     };
+
     const handleSiteChange = (index, value) => {
         const updated = [...domainSites];
         updated[index] = value;
         setDomainSites(updated);
     };
+
     const handleAddSite = () => {
         setDomainSites((prev) => [...prev, '']);
     };
+    
     const handleRemoveSite = (index) => {
         setDomainSites((prev) => prev.filter((_, i) => i !== index));
     };
@@ -188,7 +197,7 @@ const AccessTokenDetails = () => {
             const response = await accessTokenService.deleteAccessKey(accessKeyId);
             if (response.status === 200) {
                 toast.success('Token deleted successfully');
-                setTimeout(() => navigate('/accesstoken', { state: { project_id: projectID } }), 1200);
+                navigate('/accesstoken', { state: { project_id: projectID } });
             }
         } catch (err) {
             toast.error('Failed to delete token');
