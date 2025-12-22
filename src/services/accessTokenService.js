@@ -29,26 +29,8 @@ const accessTokenService = {
      */
     getAccessKeyById: async (accessKeyId) => {
         const headers = { headers: getAuthHeaders() };
-
-
-        const primaryUrl = `${API_URL}/access-keys/${accessKeyId}`;
-        try {
-            return await axios.get(primaryUrl, headers);
-        } catch (err) {
-
-            const fallbacks = [
-                `${API_URL}/access-key/${accessKeyId}`,
-                `${API_URL}/access_key/${accessKeyId}`,
-            ];
-            for (const url of fallbacks) {
-                try {
-                    return await axios.get(url, headers);
-                } catch (_) {
-
-                }
-            }
-            throw err; 
-        }
+        const url = `${API_URL}/access-keys/${accessKeyId}`;
+        return await axios.get(url, headers);
     },
     /**
      * Get all access keys for a specific project
