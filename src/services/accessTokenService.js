@@ -6,15 +6,32 @@ const API_URL = process.env.REACT_APP_API_URL;
  * Get authorization headers for API requests
  * @returns {Object} Headers object with authorization token
  */
-const getAuthHeaders = () => ({
-    authorization: localStorage.getItem('auth-token'),
-});
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('auth-token');
+    if (!token) return {};
+    const bearer = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+    // Send both common header casings to maximize backend compatibility
+    return {
+        authorization: token,
+        Authorization: bearer,
+    };
+};
 
 /**
  * Access Token Service
  * Handles all API calls related to access tokens
  */
 const accessTokenService = {
+    /**
+     * Get a single access key by ID
+     * @param {number} accessKeyId - The access key ID to fetch
+     * @returns {Promise<Object>} Response containing access key details
+     */
+    getAccessKeyById: async (accessKeyId) => {
+        const headers = { headers: getAuthHeaders() };
+        const url = `${API_URL}/access-keys/${accessKeyId}`;
+        return await axios.get(url, headers);
+    },
     /**
      * Get all access keys for a specific project
      * @param {number} projectId - The project ID to fetch access keys for

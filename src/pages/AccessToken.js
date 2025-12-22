@@ -86,9 +86,11 @@ const AccessToken = () => {
     };
 
     const handleEditToken = (token) => {
-        // TODO: Implement edit functionality
-        console.log('Edit token:', token);
-    };
+        if (!token?.access_key_id) return;
+        navigate(`/accesstoken/${token.access_key_id}`, {
+            state: { access_key_id: token.access_key_id, project_id: projectID },
+        });
+    };  
 
     const handleDeleteClick = (token) => {
         setTokenToDelete(token);
@@ -144,13 +146,15 @@ const AccessToken = () => {
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens`}>
             {/* Header with Add Button */}
             <div className="flex flex-row justify-end px-7 sm:px-10 mt-6 sm:mt-2">
-                {accessTokens.length > 0 && (
-                    <PillButton
-                        text="Generate New Token"
-                        icon={FaPlusCircle}
-                        onClick={handleGenerateNewToken}
-                    />
-                )}
+                <div className="flex gap-3">
+                    {accessTokens.length > 0 && (
+                        <PillButton
+                            text="Generate New Token"
+                            icon={FaPlusCircle}
+                            onClick={handleGenerateNewToken}
+                        />
+                    )}
+                </div>
             </div>
 
             {/* Access Tokens List */}
