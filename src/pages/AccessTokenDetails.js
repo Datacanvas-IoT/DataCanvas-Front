@@ -9,6 +9,7 @@ import InsightCard from '../components/cards/InsightCard';
 import SelectBox from '../components/input/SelectBox';
 import RectangularRowCard from '../components/cards/RectangularCard';
 import Spinner from '../components/Spinner';
+import DeleteConfirmationPopup from '../components/DeleteConfirmationPopup';
 import accessTokenService from '../services/accessTokenService';
 import { FaTrash, FaCheck, FaCog } from 'react-icons/fa';
 
@@ -46,6 +47,8 @@ const AccessTokenDetails = () => {
     const [origExpirationDate, setOrigExpirationDate] = useState(null);
     const [origSelectedDevices, setOrigSelectedDevices] = useState([]);
     const [origDomainSites, setOrigDomainSites] = useState(['']);
+
+    const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
     useEffect(() => {
         try {
@@ -190,8 +193,17 @@ const AccessTokenDetails = () => {
         toast.info('Changes reverted');
     };
 
-    const handleDeleteToken = async () => {
+    const handleDeleteClick = () => {
+        setIsDeletePopupOpen(true);
+    };
+
+    const handleCloseDeletePopup = () => {
+        setIsDeletePopupOpen(false);
+    };
+
+    const handleConfirmDelete = async () => {
         if (!accessKeyId) return;
+        setIsDeletePopupOpen(false);
         setLoading(true);
         try {
             const response = await accessTokenService.deleteAccessKey(accessKeyId);
@@ -284,7 +296,7 @@ const AccessTokenDetails = () => {
                         <div className="mt-3 w-full mx-12">
                             <PillButton
                                 text="Delete Access Token"
-                                onClick={handleDeleteToken}
+                                onClick={handleDeleteClick}
                                 color="red"
                                 icon={FaTrash}
                             />
@@ -380,6 +392,16 @@ const AccessTokenDetails = () => {
 
             <ToastContainer position="bottom-center" theme="dark" />
             <Spinner isVisible={loading} />
+
+            {/* Delete Confirmation Popup */}
+            <DeleteConfirmationPopup
+                isOpen={isDeletePopupOpen}
+                onClose={handleCloseDeletePopup}
+                onConfirm={handleConfirmDelete}
+                title="Delete Access Token"
+                itemName={tokenName || 'this token'}
+                warningMessage="This action cannot be undone. Any applications using this token will lose access."
+            />
         </SidebarLayout>
     );
 };
