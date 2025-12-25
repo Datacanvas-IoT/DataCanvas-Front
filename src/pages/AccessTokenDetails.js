@@ -431,9 +431,20 @@ const AccessTokenDetails = () => {
                         <RectangularCard
                           key={d.device_id}
                           title={d.device_name}
-                          subtitle="Remove"
-                          icon={GreenTrashIcon}
-                          onClick={() => handleRemoveDevice(d.device_id)}
+                          subtitle={
+                            <span className="flex items-center gap-2">
+                              Remove
+                              <span
+                                className="cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveDevice(d.device_id);
+                                }}
+                              >
+                                <GreenTrashIcon />
+                              </span>
+                            </span>
+                          }
                         />
                       ))}
                       {showAllDevices &&
