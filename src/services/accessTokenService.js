@@ -96,6 +96,26 @@ const accessTokenService = {
         );
         return response;
     },
+
+    /**
+     * Update an existing access key
+     * @param {number} accessKeyId - The access key ID to update
+     * @param {Object} updateData - The data to update
+     * @param {string} [updateData.access_key_name] - New name for the access key
+     * @param {Array<string>} [updateData.domain_name_array] - Array of domain names
+     * @param {Array<number>} [updateData.device_id_array] - Array of device IDs
+     * @returns {Promise<Object>} Response from the update operation
+     */
+    updateAccessKey: async (accessKeyId, updateData) => {
+        const response = await axios.put(
+            `${API_URL}/access-keys/${accessKeyId}`,
+            updateData,
+            {
+                headers: getAuthHeaders(),
+            }
+        );
+        return response;
+    },
 };
 
 export default accessTokenService;
