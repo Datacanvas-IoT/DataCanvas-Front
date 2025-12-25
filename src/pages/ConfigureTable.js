@@ -558,7 +558,19 @@ function ConfigureTable() {
                             placeholder="Maximum Length"
                             maxLength={20}
                             textAlign={'left'}
-                            onChange={((e) => setNewColumnMaxLength(e.target.value))}
+                            onChange={((e) => {
+                              const val = e.target.value;
+                              if (val === '') {
+                                setNewColumnMaxLength('');
+                              } else {
+                                const intVal = parseInt(val, 10);
+                                if (!isNaN(intVal) && intVal > 0 && String(intVal) === val) {
+                                  setNewColumnMaxLength(intVal);
+                                } else {
+                                  toast.error('Maximum length must be a positive integer.');
+                                }
+                              }
+                            })}
                             value={newColumnMaxLength}
                             disabled={(newColumnDataType == 3) ? false : true} />
                     </div>

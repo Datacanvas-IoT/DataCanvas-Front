@@ -260,6 +260,13 @@ function DatasetViewer() {
     // ---------- Function to load data of a table - with limit and offset ----------
     const loadDataOfATable = async () => {
         if (tblID == -1) return;
+
+        // Validate dataRetrievalLimit before making API call
+        if (!dataRetrievalLimit || dataRetrievalLimit === '' || isNaN(dataRetrievalLimit) || dataRetrievalLimit <= 0 || !Number.isInteger(Number(dataRetrievalLimit))) {
+            toast.error('Please enter a valid positive integer for the data retrieval limit.');
+            return;
+        }
+
         try {
             setLoading(true);
             // ---------- Get auth-token from local storage ----------

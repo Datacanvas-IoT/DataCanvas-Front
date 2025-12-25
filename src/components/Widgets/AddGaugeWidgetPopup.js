@@ -98,14 +98,34 @@ const AddGaugeWidgetPopup = ({
           <span className="text-sm">Minimum Value</span>
           <TextBox type="number" placeholder="Enter minimum value"
             value={minValue}
-            onChange={(e) => { setMinValue(parseInt(e.target.value)) }} />
+            onChange={(e) => { 
+              const val = e.target.value;
+              if (val === '') {
+                setMinValue('');
+              } else {
+                const numVal = Number(val);
+                if (!isNaN(numVal)) {
+                  setMinValue(numVal);
+                }
+              }
+            }} />
         </div>
 
         <div className="mt-4">
           <span className="text-sm">Maximum Value</span>
           <TextBox type="number" placeholder="Enter maximum value"
             value={maxValue}
-            onChange={(e) => { setMaxValue(parseInt(e.target.value)) }} />
+            onChange={(e) => { 
+              const val = e.target.value;
+              if (val === '') {
+                setMaxValue('');
+              } else {
+                const numVal = Number(val);
+                if (!isNaN(numVal)) {
+                  setMaxValue(numVal);
+                }
+              }
+            }} />
         </div>
 
         <div className="mt-4">

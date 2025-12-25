@@ -81,6 +81,23 @@ const AddDataPopup = ({ isOpen, closeFunction, columns, projectID, tblName, setL
             return;
         }
 
+        // Validate numeric fields
+        for (let column of columns) {
+            if (column.clm_name !== 'id' && column.clm_name !== 'device' && !column.is_system_column) {
+                const value = newData[column.clm_name];
+                if ((column.data_type == 1 || column.data_type == 2) && value !== '' && value !== undefined) {
+                    if (isNaN(value)) {
+                        toast.error(`${column.clm_name} must be a valid number.`);
+                        return;
+                    }
+                    if (column.data_type == 1 && !Number.isInteger(Number(value))) {
+                        toast.error(`${column.clm_name} must be an integer.`);
+                        return;
+                    }
+                }
+            }
+        }
+
         // get fingerprint from devices list
         let fingerprint = '';
         devices.map((device) => {
