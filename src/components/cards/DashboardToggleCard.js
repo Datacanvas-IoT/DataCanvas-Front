@@ -11,7 +11,8 @@ const DashboardToggleCard = ({
     widget,
     deleteWidget = () => { },
     updateWidget = () => { },
-    mqttPayload = null
+    mqttPayload = null,
+    readOnly = false
 }) => {
     const [loading, setLoading] = useState(false);
     const [toggleState, setToggleState] = useState(false);
@@ -128,6 +129,10 @@ const DashboardToggleCard = ({
                 ) : (
                     <div className="w-full flex flex-col justify-center items-center">
                         <Switch onChange={(e) => {
+                            if (readOnly) {
+                                toast.info("This is a read-only view");
+                                return;
+                            }
                             if (widget.configuration.write_enabled == true) {
                                 handleToggleChange(e);
                             } else {
@@ -139,21 +144,27 @@ const DashboardToggleCard = ({
                             height={40}
                             handleDiameter={42}
                             offColor="#C0392B"
+                            disabled={readOnly}
                         // disabled={(widget.configuration.write_enabled == true) ? false : true} 
                         />
-                        {widget.configuration.write_enabled == true ? <span className="text-sm mt-4 text-gray1">This toggle widget works as a 2-way switch</span> :
+                        {readOnly ? <span className="text-sm mt-4 text-gray1">Read-only view</span> :
+                            widget.configuration.write_enabled == true ? <span className="text-sm mt-4 text-gray1">This toggle widget works as a 2-way switch</span> :
                             <span className="text-sm mt-4 text-gray1">This toggle widget works as a 1-way switch</span>}
                     </div>
                 )}
 
                 {/* Bottom bar for edit and delete buttons */}
                 <div className="flex justify-end w-full px-4">
-                    <div className="flex">
-                        <FaPencilAlt className="text-green text-lg hover:text-gray2 transition duration-300"
-                            onClick={() => { updateWidget(widget) }} />
-                        <FaTrash className="text-red text-lg ms-5 hover:text-gray2 transition duration-300"
-                            onClick={() => { deleteWidget(widget.id) }} />
-                    </div>
+                    {readOnly ? (
+                        <span className="text-xs text-gray1 bg-gray1 bg-opacity-20 px-2 py-1 rounded">View Only</span>
+                    ) : (
+                        <div className="flex">
+                            <FaPencilAlt className="text-green text-lg hover:text-gray2 transition duration-300"
+                                onClick={() => { updateWidget(widget) }} />
+                            <FaTrash className="text-red text-lg ms-5 hover:text-gray2 transition duration-300"
+                                onClick={() => { deleteWidget(widget.id) }} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

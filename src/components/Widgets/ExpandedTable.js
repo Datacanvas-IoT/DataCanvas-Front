@@ -47,6 +47,12 @@ export default function ExpandedTable({ widget, setLoading, navigate }) {
     }, []);
 
     const fetchData = async () => {
+        // Validate limit before making API call
+        if (!limit || limit === '' || isNaN(limit) || limit <= 0 || !Number.isInteger(Number(limit))) {
+            toast.error('Please enter a valid positive integer for the limit.');
+            return;
+        }
+
         try {
             setLoading(true);
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/table?widget_id=${widget.id}&offset=${page}&limit=${limit}`,

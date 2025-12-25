@@ -6,7 +6,8 @@ const DashboardTableCard = ({
     onClick = () => { },
     widget,
     deleteWidget = () => { },
-    updateWidget = () => { }
+    updateWidget = () => { },
+    readOnly = false
 }) => {
     return (
         <div
@@ -31,12 +32,16 @@ const DashboardTableCard = ({
 
                 {/* Bottom bar for edit and delete buttons */}
                 <div className="flex justify-end w-full px-4">
-                    <div className="flex">
-                        <FaPencilAlt className="text-green text-lg hover:text-gray2 transition duration-300"
-                            onClick={() => { updateWidget(widget) }} />
-                        <FaTrash className="text-red text-lg ms-5 hover:text-gray2 transition duration-300"
-                            onClick={() => { deleteWidget(widget.id) }} />
-                    </div>
+                    {readOnly ? (
+                        <span className="text-xs text-gray1 bg-gray1 bg-opacity-20 px-2 py-1 rounded">View Only</span>
+                    ) : (
+                        <div className="flex">
+                            <FaPencilAlt className="text-green text-lg hover:text-gray2 transition duration-300"
+                                onClick={() => { updateWidget(widget) }} />
+                            <FaTrash className="text-red text-lg ms-5 hover:text-gray2 transition duration-300"
+                                onClick={() => { deleteWidget(widget.id) }} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

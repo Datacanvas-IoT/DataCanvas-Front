@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaShareAlt } from "react-icons/fa";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,6 +15,7 @@ import DashboardToggleCard from '../components/cards/DashboardToggleCard';
 import DashboardGaugeCard from '../components/cards/DashboardGaugeCard';
 import DashboardMetricCard from '../components/cards/DashboardMetricCard';
 import DeleteWidgetPopup from '../components/Widgets/DeleteWidgetPopup';
+import ShareDashboardPopup from '../components/ShareDashboardPopup';
 
 function Dashboard() {
     // ---------- Get states from navigation location for retrieval of project_id ----------
@@ -63,6 +64,9 @@ function Dashboard() {
             setIsDeleteWidgetPopupVisible(false);
         }
     }, [selectedWidget_Deletion]);
+
+    // ---------- states and functions for Share Dashboard Popup visibility ----------
+    const [isSharePopupVisible, setIsSharePopupVisible] = useState(false);
 
 
     // ---------- State to store widget details ----------
@@ -323,7 +327,10 @@ function Dashboard() {
             breadcrumb={`${localStorage.getItem('project')} > Visualizations`}>
             <div className={`flex flex-row justify-between px-7 sm:px-10 mt-6 sm:mt-2`}>
                 <span className={`text-lg font-semibold`}>{projectName}</span>
-                <PillButton text="Add Widget" icon={FaPlusCircle} onClick={() => { setIsAddWidgetPopupVisible(true) }} />
+                <div className="flex space-x-3">
+                    <PillButton text="Share" icon={FaShareAlt} onClick={() => { setIsSharePopupVisible(true) }} />
+                    <PillButton text="Add Widget" icon={FaPlusCircle} onClick={() => { setIsAddWidgetPopupVisible(true) }} />
+                </div>
             </div>
 
             {/* This popup series will open when Add Widget button is clicked */}
@@ -384,6 +391,14 @@ function Dashboard() {
                 />
 
             )}
+
+            {/* Share Dashboard Popup */}
+            <ShareDashboardPopup
+                isOpen={isSharePopupVisible}
+                onClose={() => setIsSharePopupVisible(false)}
+                projectId={projectID}
+                widgets={widgets}
+            />
 
             {/* Spinner component will be visible when loading state is true */}
             <Spinner isVisible={loading} />

@@ -113,7 +113,17 @@ const GenerateNewToken = () => {
     };
 
     const handleExpirationChange = (e) => {
-        setExpiration(parseInt(e.target.value));
+        const val = e.target.value;
+        if (val === '') {
+            setExpiration('');
+        } else {
+            const intVal = parseInt(val, 10);
+            if (!isNaN(intVal) && intVal > 0) {
+                setExpiration(intVal);
+            } else {
+                toast.error('Expiration must be a positive integer.');
+            }
+        }
     };
 
     const handleDeviceToggle = (deviceId) => {
