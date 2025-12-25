@@ -239,22 +239,9 @@ const GenerateNewToken = () => {
 
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens > Generate New`}>
-            {/* Header with Back Button */}
-            <div className="flex flex-row justify-between items-center px-7 sm:px-10 mt-6 sm:mt-2">
-                <div className="flex items-center">
-                    <button
-                        onClick={handleGoBack}
-                        className="text-green hover:text-gray2 transition-colors mr-4"
-                    >
-                        <FaArrowLeft className="text-sm" />
-                    </button>
-                    <span className="text-sm text-gray2">Back to Access Tokens</span>
-                </div>
-            </div>
-
             {/* Token Generation Form */}
-            <div className="px-7 sm:px-10 mt-6 mb-28">
-                <div className="max-w-2xl">
+            <div className="px-7 sm:px-10 mb-28">
+                <div className="w-full">
                     <h1 className="text-2xl font-semibold text-green mb-2">Generate New Access Token</h1>
                     <p className="text-gray2 text-sm mb-6">
                         Create a fine-grained access token for API access to this project.
@@ -313,12 +300,14 @@ const GenerateNewToken = () => {
                     />
 
                     {/* Domain Sites */}
-                    <DomainSitesInput
-                        domainSites={domainSites}
-                        onSiteChange={handleSiteChange}
-                        onAddSite={handleAddSite}
-                        onRemoveSite={handleRemoveSite}
-                    />
+                    <div className="w-full">
+                        <DomainSitesInput
+                            domainSites={domainSites}
+                            onSiteChange={handleSiteChange}
+                            onAddSite={handleAddSite}
+                            onRemoveSite={handleRemoveSite}
+                        />
+                    </div>
 
                     {/* Buttons */}
                     <div className="flex justify-between mt-8">
