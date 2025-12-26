@@ -93,7 +93,7 @@ const ShareDashboardPopup = ({
         }
     };
 
-    const handleUpdateShare = async () => {
+    const handleupdateSharedDashboard = async () => {
         if (!editingShare) return;
 
         if (selectedWidgets.length === 0) {
@@ -103,7 +103,7 @@ const ShareDashboardPopup = ({
 
         setLoading(true);
         try {
-            const response = await shareService.updateShare({
+            const response = await shareService.updateSharedDashboard({
                 share_id: editingShare.share_id,
                 allowed_widget_ids: selectedWidgets,
                 share_name: shareName
@@ -126,14 +126,14 @@ const ShareDashboardPopup = ({
         }
     };
 
-    const handleDeleteShare = async (shareId) => {
+    const handledeleteSharedDashboard = async (shareId) => {
         if (!window.confirm("Are you sure you want to revoke this share link? Anyone with the link will no longer be able to view the dashboard.")) {
             return;
         }
 
         setLoading(true);
         try {
-            const response = await shareService.deleteShare(shareId);
+            const response = await shareService.deleteSharedDashboard(shareId);
             if (response.data.success) {
                 toast.success("Share link revoked successfully!");
                 setShares(prev => prev.filter(s => s.share_id !== shareId));
@@ -237,7 +237,7 @@ const ShareDashboardPopup = ({
                                                 <FaPencilAlt />
                                             </button>
                                             <button
-                                                onClick={() => handleDeleteShare(share.share_id)}
+                                                onClick={() => handledeleteSharedDashboard(share.share_id)}
                                                 className="text-gray1 hover:text-red transition"
                                                 title="Revoke"
                                             >
@@ -344,7 +344,7 @@ const ShareDashboardPopup = ({
                         <PillButton
                             text={editingShare ? "Update Share" : "Generate Link"}
                             icon={editingShare ? FaCheck : FaShareAlt}
-                            onClick={editingShare ? handleUpdateShare : handleCreateShare}
+                            onClick={editingShare ? handleupdateSharedDashboard : handleCreateShare}
                             disabled={selectedWidgets.length === 0}
                         />
                     </div>

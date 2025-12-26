@@ -60,7 +60,7 @@ const shareService = {
      * @param {string|null} [shareData.expires_at] - Updated expiration date
      * @returns {Promise<Object>} Response from the update operation
      */
-    updateShare: async (shareData) => {
+    updateSharedDashboard: async (shareData) => {
         const response = await axios.put(
             `${API_URL}/share`,
             shareData,
@@ -76,12 +76,11 @@ const shareService = {
      * @param {number} shareId - The share ID to delete
      * @returns {Promise<Object>} Response from the delete operation
      */
-    deleteShare: async (shareId) => {
+    deleteSharedDashboard: async (shareId) => {
         const response = await axios.delete(
-            `${API_URL}/share`,
+            `${API_URL}/share/${shareId}`,
             {
                 headers: getAuthHeaders(),
-                data: { share_id: shareId },
             }
         );
         return response;
