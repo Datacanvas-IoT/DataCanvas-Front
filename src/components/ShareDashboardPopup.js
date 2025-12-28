@@ -152,13 +152,37 @@ const ShareDashboardPopup = ({
     };
 
     const handleCopyLink = async (shareToken) => {
-        const shareUrl = shareService.generateShareUrl(shareToken);
         try {
-            await navigator.clipboard.writeText(shareUrl);
-            setCopiedToken(shareToken);
-            toast.success("Link copied to clipboard!");
-            setTimeout(() => setCopiedToken(null), 2000);
+            const shareUrl = shareService.generateShareUrl(shareToken);
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(shareUrl);
+                setCopiedToken(shareToken);
+                toast.success("Link copied to clipboard!");
+                setTimeout(() => setCopiedToken(null), 2000);
+            } else {
+                // Fallback for older browsers or insecure contexts
+                const textArea = document.createElement("textarea");
+                textArea.value = shareUrl;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setCopiedToken(shareToken);
+                    toast.success("Link copied to clipboard!");
+                    setTimeout(() => setCopiedToken(null), 2000);
+                } catch (err) {
+                    console.error("Fallback copy failed:", err);
+                    toast.error("Failed to copy link");
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+            }
         } catch (error) {
+            console.error("Error copying link:", error);
             toast.error("Failed to copy link");
         }
     };
