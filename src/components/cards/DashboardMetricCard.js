@@ -10,14 +10,33 @@ const DashboardMetricCard = ({
   deleteWidget = () => {},
   updateWidget = () => {},
   mqttPayload = null,
+  readOnly = false,
+  publicData = null, // Pre-loaded data for public dashboards
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [metricValue, setMetricValue] = useState("N/A");
-  const [createdAt, setCreatedAt] = useState(null);
+  const [loading, setLoading] = useState(publicData === null);
+  const [metricValue, setMetricValue] = useState(
+    publicData !== null && publicData.value != null ? publicData.value : "N/A"
+  );
+  const [createdAt, setCreatedAt] = useState(
+    publicData !== null ? publicData.created_at : null
+  );
 
   useEffect(() => {
-    loadMetricData(widget.id);
+    // Only load from API if no publicData is provided AND not in readOnly mode
+    // readOnly mode means it's a public dashboard, which uses publicData instead
+    if (publicData === null && !readOnly) {
+      loadMetricData(widget.id);
+    }
   }, []);
+
+  // Update state when publicData changes (from wrapper component)
+  useEffect(() => {
+    if (publicData !== null) {
+      setMetricValue(publicData.value != null ? publicData.value : "N/A");
+      setCreatedAt(publicData.created_at ?? null);
+      setLoading(false);
+    }
+  }, [publicData]);
 
   useEffect(() => {
     if (!mqttPayload) return;
@@ -112,20 +131,24 @@ const DashboardMetricCard = ({
         )}
 
         <div className="flex justify-end w-full px-4">
-          <div className="flex">
-            <FaPencilAlt
-              className="text-green text-lg hover:text-gray2 transition duration-300"
-              onClick={() => {
-                updateWidget(widget);
-              }}
-            />
-            <FaTrash
-              className="text-red text-lg ms-5 hover:text-gray2 transition duration-300"
-              onClick={() => {
-                deleteWidget(widget.id);
-              }}
-            />
-          </div>
+          {readOnly ? (
+            <span className="text-xs text-gray1 bg-gray1 bg-opacity-20 px-2 py-1 rounded">View Only</span>
+          ) : (
+            <div className="flex">
+              <FaPencilAlt
+                className="text-green text-lg hover:text-gray2 transition duration-300"
+                onClick={() => {
+                  updateWidget(widget);
+                }}
+              />
+              <FaTrash
+                className="text-red text-lg ms-5 hover:text-gray2 transition duration-300"
+                onClick={() => {
+                  deleteWidget(widget.id);
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
