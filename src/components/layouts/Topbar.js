@@ -16,6 +16,41 @@ const Topbar = ({ searchBarDisplayed, sideBarButtonDisplayed, isSidebarOpen, tog
 
     const [projectID, setProjectID] = useState(-1);
 
+    // Function to handle breadcrumb navigation
+    const handleBreadcrumbClick = (index, segment) => {
+        const project = localStorage.getItem('project');
+        const projectId = localStorage.getItem('project_id');
+        
+        // First segment is always the project name
+        if (index === 0) {
+            navigate('/overview', { state: { project_id: projectId } });
+        } 
+        // Handle specific page navigation based on segment name
+        else {
+            const segmentLower = segment.toLowerCase().trim();
+            
+            if (segmentLower === 'overview') {
+                navigate('/overview', { state: { project_id: projectId } });
+            } else if (segmentLower === 'visualizations' || segmentLower === 'dashboard') {
+                navigate('/dashboard', { state: { project_id: projectId } });
+            } else if (segmentLower === 'analytics') {
+                navigate('/analytics', { state: { project_id: projectId } });
+            } else if (segmentLower === 'devices') {
+                navigate('/devices', { state: { project_id: projectId } });
+            } else if (segmentLower === 'data tables') {
+                navigate('/datahandler', { state: { project_id: projectId } });
+            } else if (segmentLower === 'project settings') {
+                navigate('/projectsettings', { state: { project_id: projectId } });
+            } else if (segmentLower === 'access tokens') {
+                navigate('/accesstoken', { state: { project_id: projectId } });
+            } else if (segmentLower === 'user settings') {
+                navigate('/usersettings');
+            }
+            // For table names (e.g., "{tablename} > Configure" or "{tablename} > Dataset")
+            // We don't navigate to intermediate segments, only final destinations
+        }
+    };
+
     const [profilePicture, setProfilePicture] = useState(process.env.PUBLIC_URL + '/img/sample_user.png');
 
     useEffect(() => {
@@ -167,7 +202,25 @@ const Topbar = ({ searchBarDisplayed, sideBarButtonDisplayed, isSidebarOpen, tog
             ) : (
                 <div className="flex w-full items-center justify-end sm:justify-between h-20 px-5">
                     <div className='text-gray2 text-sm hidden sm:block truncate mr-3'>
-                        {`${breadcrumb}`}
+                        {breadcrumb ? (
+                            breadcrumb.split(' > ').map((segment, index, array) => (
+                                <span key={index}>
+                                    {index < array.length - 1 ? (
+                                        <>
+                                            <span 
+                                                className="cursor-pointer hover:text-green transition-colors duration-200"
+                                                onClick={() => handleBreadcrumbClick(index, segment)}
+                                            >
+                                                {segment}
+                                            </span>
+                                            <span className="mx-2">{'>'}</span>
+                                        </>
+                                    ) : (
+                                        <span className="text-white">{segment}</span>
+                                    )}
+                                </span>
+                            ))
+                        ) : null}
                     </div>
                     <div className='flex flex-row justify-center items-center'>
                         {searchBarDisplayed ? (

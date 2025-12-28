@@ -11,7 +11,7 @@ const PillButton = ({ text, onClick, icon: Icon, isPopup, color, disabled }) => 
   return (
     <button className={buttonClasses} onClick={onClick} disabled={disabled}>
       <span className='text-sm'>{text}</span>
-      <Icon className={`text-sm ml-2`} />
+      {Icon ? <Icon className={`text-sm ml-2`} /> : null}
     </button>
   );
 };

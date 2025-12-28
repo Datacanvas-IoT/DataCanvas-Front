@@ -126,6 +126,12 @@ export default function ExpandedChart({ widget, setLoading = () => { }, navigate
         * Headers: localStorage.getItem(auth-token)
     */
     const loadChartData = async () => {
+        // Validate recordLimit before making API call
+        if (!recordLimit || recordLimit === '' || isNaN(recordLimit) || recordLimit <= 0 || !Number.isInteger(Number(recordLimit))) {
+            toast.error('Please enter a valid positive integer for the record limit.');
+            return;
+        }
+
         setLoading(true);
 
         try {

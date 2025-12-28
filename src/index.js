@@ -24,6 +24,9 @@ import Analytics from './pages/Analytics';
 import ExpandedWidget from './pages/ExpandedWidget';
 import AccessToken from './pages/AccessToken';
 import GenerateNewToken from './pages/GenerateNewToken';
+import PublicDashboard from './pages/PublicDashboard';
+import PublicExpandedWidget from './pages/PublicExpandedWidget';
+import AccessTokenDetails from './pages/AccessTokenDetails';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -33,6 +36,10 @@ const token = localStorage.getItem('auth-token');
 root.render(
   <Router>
     <Routes>
+      {/* Public routes - no authentication required */}
+      <Route path="/public/dashboard/:shareToken" element={<PublicDashboard />} />
+      <Route path="/public/dashboard/:shareToken/expand" element={<PublicExpandedWidget />} />
+      
       <Route exact path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgotpassword" element={<ForgotPassword />} />
@@ -49,6 +56,7 @@ root.render(
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/expand" element={<ExpandedWidget />} />
       <Route path="/accesstoken" element={<AccessToken />} />
+      <Route path="/accesstoken/:access_key_id" element={<AccessTokenDetails />} />
       <Route path="/generatenewtoken" element={<GenerateNewToken />} />
     </Routes>
   </Router>

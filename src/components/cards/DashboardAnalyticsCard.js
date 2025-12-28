@@ -104,10 +104,18 @@ const DashboardAnalyticsCard = ({
                                 <TextBox
                                     value={filterValue}
                                     onChange={(e) => {
-                                        let val = parseInt(e.target.value);
-                                        if (val < 0) val = 0;
-                                        if (val > 1000) val = 1000;
-                                        setFilterValue(val);
+                                        const val = e.target.value;
+                                        if (val === '') {
+                                            setFilterValue('');
+                                        } else {
+                                            let numVal = parseInt(val, 10);
+                                            if (isNaN(numVal)) {
+                                                return;
+                                            }
+                                            if (numVal < 0) numVal = 0;
+                                            if (numVal > 1000) numVal = 1000;
+                                            setFilterValue(numVal);
+                                        }
                                     }}
                                     width="w-40"
                                     type={'number'}
