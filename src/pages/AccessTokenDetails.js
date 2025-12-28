@@ -1,5 +1,20 @@
 import React, { useEffect, useState } from "react";
+import SelectBox from "../components/input/SelectBox";
+import { FaCalendarAlt, FaTimes } from "react-icons/fa";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+const expirationOptions = [
+  { value: 7, label: '7 days' },
+  { value: 30, label: '30 days' },
+  { value: 60, label: '60 days' },
+  { value: 90, label: '90 days' },
+  { value: 180, label: '180 days' },
+  { value: 365, label: '1 year' },
+];
+const getExpirationDate = (days) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+};
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SidebarLayout from "../components/layouts/SidebarLayout";
@@ -40,6 +55,9 @@ const AccessTokenDetails = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { access_key_id: paramAccessKeyId } = useParams();
+  // Expiration renewal popup state (move hooks inside component)
+  const [showRenewPopup, setShowRenewPopup] = useState(false);
+  const [renewDuration, setRenewDuration] = useState(7);
 
   const [loading, setLoading] = useState(false);
   const [projectID, setProjectID] = useState(-1);
@@ -99,7 +117,7 @@ const AccessTokenDetails = () => {
         const devs = Array.isArray(data.device_ids) ? data.device_ids : [];
         const domainsArr =
           Array.isArray(data.access_key_domain_names) &&
-          data.access_key_domain_names.length > 0
+            data.access_key_domain_names.length > 0
             ? data.access_key_domain_names
             : [""];
 
@@ -230,11 +248,11 @@ const AccessTokenDetails = () => {
 
     // Check if there are any changes
     const hasNameChange = tokenName !== origTokenName;
-    
+
     const hasDeviceChange =
       selectedDevices.length !== origSelectedDevices.length ||
       selectedDevices.some((id) => !origSelectedDevices.includes(id));
-    
+
     const hasDomainsChange =
       validDomains.length !== origValidDomains.length ||
       validDomains.some((domain) => !origValidDomains.includes(domain));
@@ -374,11 +392,60 @@ const AccessTokenDetails = () => {
               <div className="mt-3 w-full mx-12">
                 <PillButton
                   text="Extend Expiration Date"
-                  onClick={() =>
-                    toast.info("Extend expiration flow will be added")
-                  }
+                  onClick={() => setShowRenewPopup(true)}
                   icon={FaCog}
                 />
+                {showRenewPopup && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+                    <div className="bg-black2 rounded-xl p-6 w-full max-w-md shadow-lg relative">
+                      <div className="flex items-center mb-4">
+                        <FaCalendarAlt className="text-green mr-2" />
+                        <span className="text-green font-semibold text-lg">Extend Expiration Date</span>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-gray2 text-sm mb-1">Expiration</label>
+                        <SelectBox value={renewDuration} onChange={e => setRenewDuration(Number(e.target.value))} width="w-full" mt="mt-0">
+                          {expirationOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label} ({getExpirationDate(option.value)})
+                            </option>
+                          ))}
+                        </SelectBox>
+                        <p className="text-gray1 text-xs mt-1">The token will expire on the selected date</p>
+                      </div>
+                      <div className="flex justify-end gap-2 mt-6">
+                        <button
+                          className="absolute top-3 right-3 text-gray2 hover:text-green text-xl focus:outline-none"
+                          onClick={() => setShowRenewPopup(false)}
+                          aria-label="Close"
+                        >
+                          <FaTimes />
+                        </button>
+                        <PillButton
+                          text="Update & Save"
+                          onClick={async () => {
+                            setLoading(true);
+                            try {
+                              const res = await accessTokenService.renewAccessKey(accessKeyId, renewDuration);
+                              if (res.data && res.data.success) {
+                                toast.success('Expiration extended!');
+                                setShowRenewPopup(false);
+                                setTimeout(() => navigate('/accesstoken', { state: { project_id: projectID } }), 1200);
+                              } else {
+                                toast.error('Failed to renew expiration.');
+                              }
+                            } catch (err) {
+                              toast.error('Failed to renew expiration.');
+                            } finally {
+                              setLoading(false);
+                            }
+                          }}
+                          isPopup={true}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

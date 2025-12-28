@@ -23,6 +23,22 @@ const getAuthHeaders = () => {
  */
 const accessTokenService = {
     /**
+     * Renew an access key's expiration
+     * @param {number} accessKeyId - The access key ID to renew
+     * @param {number} validDuration - Number of days to extend the key's validity
+     * @returns {Promise<Object>} Response from the renew operation
+     */
+    renewAccessKey: async (accessKeyId, validDuration) => {
+        const response = await axios.post(
+            `${API_URL}/access-keys/${accessKeyId}/renew`,
+            { valid_duration_for_access_key: validDuration },
+            {
+                headers: getAuthHeaders(),
+            }
+        );
+        return response;
+    },
+    /**
      * Get a single access key by ID
      * @param {number} accessKeyId - The access key ID to fetch
      * @returns {Promise<Object>} Response containing access key details
