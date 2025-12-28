@@ -16,7 +16,7 @@ const RectangularRowCard = ({ title, subtitle, icon: Icon, onClick }) => {
                         <div className="text-gray1 text-sm font-sm overflow-hidden hidden sm:block">
                             {subtitle}
                         </div>
-                        <Icon className="ml-3 text-3xl" />
+                        {Icon && <Icon className="ml-3 text-3xl" />}
                     </div>
                 </div>
             </div>

@@ -7,6 +7,7 @@ import SidebarLayout from '../components/layouts/SidebarLayout';
 import PillButton from '../components/input/PillButton';
 import Spinner from '../components/Spinner';
 import AccessTokenCard from '../components/cards/AccessTokenCard';
+import DeleteConfirmationPopup from '../components/DeleteConfirmationPopup';
 import accessTokenService from '../services/accessTokenService';
 
 const AccessToken = () => {
@@ -18,6 +19,9 @@ const AccessToken = () => {
 
     // Access tokens list
     const [accessTokens, setAccessTokens] = useState([]);
+
+    const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+    const [tokenToDelete, setTokenToDelete] = useState(null);
 
     // Get project_id from location state
     useEffect(() => {
@@ -82,15 +86,31 @@ const AccessToken = () => {
     };
 
     const handleEditToken = (token) => {
-        // TODO: Implement edit functionality
-        console.log('Edit token:', token);
+        if (!token?.access_key_id) return;
+        navigate(`/accesstoken/${token.access_key_id}`, {
+            state: { access_key_id: token.access_key_id, project_id: projectID },
+        });
+    };  
+
+    const handleDeleteClick = (token) => {
+        setTokenToDelete(token);
+        setIsDeletePopupOpen(true);
     };
 
-    const handleDeleteToken = async (accessKeyId) => {
+    const handleCloseDeletePopup = () => {
+        setIsDeletePopupOpen(false);
+        setTokenToDelete(null);
+    };
+
+    // Confirm and delete token
+    const handleConfirmDelete = async () => {
+        if (!tokenToDelete) return;
+
+        setIsDeletePopupOpen(false);
         setLoading(true);
 
         try {
-            const response = await accessTokenService.deleteAccessKey(accessKeyId);
+            const response = await accessTokenService.deleteAccessKey(tokenToDelete.access_key_id);
 
             if (response.status === 200) {
                 toast.success('Token deleted successfully!');
@@ -118,6 +138,7 @@ const AccessToken = () => {
             }
         } finally {
             setLoading(false);
+            setTokenToDelete(null);
         }
     };
 
@@ -125,13 +146,15 @@ const AccessToken = () => {
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens`}>
             {/* Header with Add Button */}
             <div className="flex flex-row justify-end px-7 sm:px-10 mt-6 sm:mt-2">
-                {accessTokens.length > 0 && (
-                    <PillButton
-                        text="Generate New Token"
-                        icon={FaPlusCircle}
-                        onClick={handleGenerateNewToken}
-                    />
-                )}
+                <div className="flex gap-3">
+                    {accessTokens.length > 0 && (
+                        <PillButton
+                            text="Generate New Token"
+                            icon={FaPlusCircle}
+                            onClick={handleGenerateNewToken}
+                        />
+                    )}
+                </div>
             </div>
 
             {/* Access Tokens List */}
@@ -144,7 +167,7 @@ const AccessToken = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                         {accessTokens.map((token, index) => {
                             if (!token.access_key_id) {
                                 console.warn('AccessToken: Missing access_key_id for token at index', index, token);
@@ -154,7 +177,7 @@ const AccessToken = () => {
                                     key={token.access_key_id || index}
                                     token={token}
                                     onEdit={handleEditToken}
-                                    onDelete={handleDeleteToken}
+                                    onDelete={() => handleDeleteClick(token)}
                                 />
                             );
                         })}
@@ -175,6 +198,16 @@ const AccessToken = () => {
                 theme="dark"
             />
             <Spinner isVisible={loading} />
+
+            {/* Delete Confirmation Popup */}
+            <DeleteConfirmationPopup
+                isOpen={isDeletePopupOpen}
+                onClose={handleCloseDeletePopup}
+                onConfirm={handleConfirmDelete}
+                title="Delete Access Token"
+                itemName={tokenToDelete?.access_key_name || 'this token'}
+                warningMessage="This action cannot be undone. Any applications using this token will lose access."
+            />
         </SidebarLayout>
     );
 };
