@@ -80,10 +80,15 @@ const ShareDashboardPopup = ({
                 setShareName("");
                 setShowCreateForm(false);
 
-                // Copy to clipboard
-                const shareUrl = shareService.generateShareUrl(response.data.share.share_token);
-                await navigator.clipboard.writeText(shareUrl);
-                toast.info("Share link copied to clipboard!");
+                // Copy to clipboard - handle separately to avoid triggering the catch block
+                try {
+                    const shareUrl = shareService.generateShareUrl(response.data.share.share_token);
+                    await navigator.clipboard.writeText(shareUrl);
+                    toast.info("Share link copied to clipboard!");
+                } catch (clipboardError) {
+                    console.error("Failed to copy to clipboard:", clipboardError);
+                    // Don't show error toast as the share was still created successfully
+                }
             }
         } catch (error) {
             toast.error("Failed to create share link");
