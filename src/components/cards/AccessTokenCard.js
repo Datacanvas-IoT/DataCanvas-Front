@@ -2,6 +2,14 @@ import React from 'react';
 import { FaTrash, FaPencilAlt } from 'react-icons/fa';
 
 const AccessTokenCard = ({ token, onEdit, onDelete }) => {
+  // Helper to check if expired
+  const isExpired = () => {
+    if (!token.expiration_date) return false;
+    const now = new Date();
+    const exp = new Date(token.expiration_date);
+    return exp < now;
+  };
+
   return (
     <div
       className={`w-full bg-black3 rounded-lg my-1 sm:my-1 cursor-pointer text-gray2
@@ -22,13 +30,17 @@ const AccessTokenCard = ({ token, onEdit, onDelete }) => {
             </div>
           </div>
 
-          <div className="text-md text-gray2 w-28 hidden sm:block">
-            <div className="flex flex-col justify-between items-start">
-              <div className="text-gray1 text-xs font-sm overflow-hidden">
-                Valid till:
-              </div>
-              <div className="text-gray2 text-sm">{token.expiration_date}</div>
-            </div>
+          {/* Chip UI for expiration status */}
+          <div className="hidden sm:block">
+            {isExpired() ? (
+              <span className="inline-block px-3 py-1 rounded-full border border-red text-red text-xs font-semibold bg-transparent">
+                Expired
+              </span>
+            ) : (
+              <span className="inline-block px-3 py-1 rounded-full border border-green text-green text-xs font-semibold bg-transparent">
+                Valid till: {token.expiration_date}
+              </span>
+            )}
           </div>
         </div>
 
