@@ -76,24 +76,6 @@ const GenerateNewToken = () => {
         }
     };
 
-    // Example usage:
-    // const testInputs = [
-    //   'https://www.google.com',
-    //   'https://www.google.com/maps',
-    //   'http://www.google.com/maps',
-    //   'http://192.248.11.33',
-    //   'http://192.248.11.33:8080/api',
-    //   'http://localhost:3000',
-    //   'https://subdomain.example.co.uk/path',
-    //   'example.com',
-    //   'localhost',
-    //   'invalid-url',
-    // ];
-    // testInputs.forEach(input => {
-    //   const host = extractValidHostname(input);
-    //   console.log(`${input} =>`, host);
-    // });
-
     // Get project_id from location state
     useEffect(() => {
         try {
