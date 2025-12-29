@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import RenewPopup from "../components/RenewPopup";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,6 +21,20 @@ import {
 } from "react-icons/fa";
 import DomainSitesInput from "../components/input/DomainSitesInput";
 
+const expirationOptions = [
+  { value: 7, label: '7 days' },
+  { value: 30, label: '30 days' },
+  { value: 60, label: '60 days' },
+  { value: 90, label: '90 days' },
+  { value: 180, label: '180 days' },
+  { value: 365, label: '1 year' },
+];
+const getExpirationDate = (days) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+};
+
 const GreenTrashIcon = (props) => {
   const { className, ...rest } = props;
   const cls = className
@@ -40,6 +55,9 @@ const AccessTokenDetails = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { access_key_id: paramAccessKeyId } = useParams();
+  // Expiration renewal popup state (move hooks inside component)
+  const [showRenewPopup, setShowRenewPopup] = useState(false);
+  const [renewDuration, setRenewDuration] = useState(7);
 
   const [loading, setLoading] = useState(false);
   const [projectID, setProjectID] = useState(-1);
@@ -99,7 +117,7 @@ const AccessTokenDetails = () => {
         const devs = Array.isArray(data.device_ids) ? data.device_ids : [];
         const domainsArr =
           Array.isArray(data.access_key_domain_names) &&
-          data.access_key_domain_names.length > 0
+            data.access_key_domain_names.length > 0
             ? data.access_key_domain_names
             : [""];
 
@@ -230,11 +248,11 @@ const AccessTokenDetails = () => {
 
     // Check if there are any changes
     const hasNameChange = tokenName !== origTokenName;
-    
+
     const hasDeviceChange =
       selectedDevices.length !== origSelectedDevices.length ||
       selectedDevices.some((id) => !origSelectedDevices.includes(id));
-    
+
     const hasDomainsChange =
       validDomains.length !== origValidDomains.length ||
       validDomains.some((domain) => !origValidDomains.includes(domain));
@@ -290,6 +308,24 @@ const AccessTokenDetails = () => {
           toast.error(msg || "Failed to update access token.");
           break;
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRenewAccessToken = async () => {
+    setLoading(true);
+    try {
+      const res = await accessTokenService.renewAccessKey(accessKeyId, renewDuration);
+      if (res.data && res.data.success) {
+        toast.success('Expiration extended!');
+        setShowRenewPopup(false);
+        setTimeout(() => navigate('/accesstoken', { state: { project_id: projectID } }), 1200);
+      } else {
+        toast.error('Failed to renew expiration.');
+      }
+    } catch (err) {
+      toast.error('Failed to renew expiration.');
     } finally {
       setLoading(false);
     }
@@ -374,11 +410,21 @@ const AccessTokenDetails = () => {
               <div className="mt-3 w-full mx-12">
                 <PillButton
                   text="Extend Expiration Date"
-                  onClick={() =>
-                    toast.info("Extend expiration flow will be added")
-                  }
+                  onClick={() => setShowRenewPopup(true)}
                   icon={FaCog}
                 />
+                <RenewPopup
+                  show={showRenewPopup}
+                  onClose={() => setShowRenewPopup(false)}
+                  onRenew={handleRenewAccessToken}
+                  renewDuration={renewDuration}
+                  setRenewDuration={setRenewDuration}
+                  expirationOptions={expirationOptions}
+                  getExpirationDate={getExpirationDate}
+                  loading={loading}
+                />
+
+
               </div>
             )}
 
