@@ -7,6 +7,7 @@ const AccessTokenCard = ({ token, onEdit, onDelete }) => {
       className={`w-full bg-black3 rounded-lg my-1 sm:my-1 cursor-pointer text-gray2
             border border-gray1 border-opacity-60 relative 
             transition duration-300 hover:border-green hover:border-opacity-50 hover:text-green overflow-hidden`}
+      onClick={() => onEdit(token)}
     >
       <div className="w-full h-full py-3 pl-6 pr-4 flex flex-row justify-between items-center">
         <div className="flex flex-row justify-start items-center">
