@@ -9,9 +9,13 @@ import SelectBox from '../components/input/SelectBox';
 import DeviceSelection from '../components/input/DeviceSelection';
 import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
+import TokenGeneratedPopup from '../components/TokenGeneratedPopup';
 import accessTokenService from '../services/accessTokenService';
 
 const GenerateNewToken = () => {
+    const [showTokenPopup, setShowTokenPopup] = useState(false);
+    const [clientAccessKey, setClientAccessKey] = useState('');
+    const [secretAccessKey, setSecretAccessKey] = useState('');
     const navigate = useNavigate();
     const { state } = useLocation();
 
@@ -254,9 +258,13 @@ const GenerateNewToken = () => {
                 valid_duration_for_access_key: expiration,
             });
 
-            if (response.status === 200 || response.status === 201) {
+            if ((response.status === 200 || response.status === 201) && response.data) {
+                // Expecting response.data to have client_access_key and secret_access_key
+                setClientAccessKey(response.data.client_access_key || '');
+                setSecretAccessKey(response.data.secret_access_key || '');
+                setShowTokenPopup(true);
+            } else {
                 toast.success('Token generated successfully!');
-                // Navigate back to access tokens list
                 setTimeout(() => {
                     navigate('/accesstoken', { state: { project_id: projectID } });
                 }, 1500);
@@ -291,6 +299,15 @@ const GenerateNewToken = () => {
 
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens > Generate New`}>
+            <TokenGeneratedPopup
+                isOpen={showTokenPopup}
+                onClose={() => {
+                    setShowTokenPopup(false);
+                    navigate('/accesstoken', { state: { project_id: projectID } });
+                }}
+                clientAccessKey={clientAccessKey}
+                secretAccessKey={secretAccessKey}
+            />
             {/* Token Generation Form */}
             <div className="px-7 sm:px-10 mb-28">
                 <div className="w-full">
