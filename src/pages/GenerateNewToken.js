@@ -9,9 +9,13 @@ import SelectBox from '../components/input/SelectBox';
 import DeviceSelection from '../components/input/DeviceSelection';
 import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
+import TokenGeneratedPopup from '../components/TokenGeneratedPopup';
 import accessTokenService from '../services/accessTokenService';
 
 const GenerateNewToken = () => {
+    const [showTokenPopup, setShowTokenPopup] = useState(false);
+    const [clientAccessKey, setClientAccessKey] = useState('');
+    const [secretAccessKey, setSecretAccessKey] = useState('');
     const navigate = useNavigate();
     const { state } = useLocation();
 
@@ -44,9 +48,32 @@ const GenerateNewToken = () => {
     };
 
     // Validate domain format
-    const isValidDomain = (domain) => {
-        const domainRegex = /^(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}|localhost|(?:\d{1,3}\.){3}\d{1,3})(?::\d+)?$/;
-        return domainRegex.test(domain.trim());
+    /**
+     * Validates and extracts the hostname from a given origin string.
+     * Accepts http(s) URLs, domains, subdomains, IPv4, localhost, with optional ports and paths.
+     * Returns the normalized hostname (for comparison) or null if invalid.
+     *
+     * @param {string} input - The origin or domain string to validate and extract from.
+     * @returns {string|null} - The extracted hostname, or null if invalid.
+     */
+    const extractValidHostname = (input) => {
+        if (!input || typeof input !== 'string') return null;
+        let urlStr = input.trim();
+        // If input does not start with a protocol, prepend 'http://'
+        if (!/^https?:\/\//i.test(urlStr)) {
+            urlStr = 'http://' + urlStr;
+        }
+        try {
+            const url = new URL(urlStr);
+            // Accept only http or https
+            if (!['http:', 'https:'].includes(url.protocol)) return null;
+            // Hostname must be present
+            if (!url.hostname) return null;
+            // Optionally, further checks can be added here (e.g., block invalid TLDs)
+            return url.hostname.toLowerCase();
+        } catch (e) {
+            return null;
+        }
     };
 
     // Get project_id from location state
@@ -188,10 +215,11 @@ const GenerateNewToken = () => {
             return;
         }
 
-        // Validate domain format for each site
-        const invalidDomains = validSites.filter(site => !isValidDomain(site));
-        if (invalidDomains.length > 0) {
-            toast.error(`Invalid domain format: ${invalidDomains[0]}. Use format like example.com`);
+        // Validate and normalize domains using extractValidHostname
+        const normalizedSites = validSites.map(site => extractValidHostname(site));
+        const invalidIndex = normalizedSites.findIndex(host => !host);
+        if (invalidIndex !== -1) {
+            toast.error(`Invalid domain format: ${validSites[invalidIndex]}. Please enter a valid domain or origin.`);
             return;
         }
         //Validate for dublicate sites
@@ -212,9 +240,13 @@ const GenerateNewToken = () => {
                 valid_duration_for_access_key: expiration,
             });
 
-            if (response.status === 200 || response.status === 201) {
+            if ((response.status === 200 || response.status === 201) && response.data) {
+                // Expecting response.data to have client_access_key and secret_access_key
+                setClientAccessKey(response.data.client_access_key || '');
+                setSecretAccessKey(response.data.secret_access_key || '');
+                setShowTokenPopup(true);
+            } else {
                 toast.success('Token generated successfully!');
-                // Navigate back to access tokens list
                 setTimeout(() => {
                     navigate('/accesstoken', { state: { project_id: projectID } });
                 }, 1500);
@@ -249,6 +281,15 @@ const GenerateNewToken = () => {
 
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens > Generate New`}>
+            <TokenGeneratedPopup
+                isOpen={showTokenPopup}
+                onClose={() => {
+                    setShowTokenPopup(false);
+                    navigate('/accesstoken', { state: { project_id: projectID } });
+                }}
+                clientAccessKey={clientAccessKey}
+                secretAccessKey={secretAccessKey}
+            />
             {/* Token Generation Form */}
             <div className="px-7 sm:px-10 mb-28">
                 <div className="w-full">
