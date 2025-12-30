@@ -64,6 +64,7 @@ const AccessTokenDetails = () => {
 
   // Token states
   const [accessKeyId, setAccessKeyId] = useState(null);
+  const MAX_TOKEN_NAME_LENGTH = 30;
   const [tokenName, setTokenName] = useState("");
   const [expirationDate, setExpirationDate] = useState(null);
   const [lastUseTime, setLastUseTime] = useState(null);
@@ -261,6 +262,10 @@ const AccessTokenDetails = () => {
       toast.info("No changes to save");
       return;
     }
+    if (hasNameChange && tokenName.length > MAX_TOKEN_NAME_LENGTH) {
+      toast.error(`Access token name must be at most ${MAX_TOKEN_NAME_LENGTH} characters.`);
+      return;
+    }
 
     setLoading(true);
     try {
@@ -360,21 +365,26 @@ const AccessTokenDetails = () => {
               General Settings
             </div>
 
-            <div className="flex flex-row mt-1 my-4">
+            <div className="flex flex-row mt-1 my-4 items-center">
               <div className="flex flex-col w-1/4 md:w-1/6">
                 <div className="text-sm md:text-md text-gray1 font-semibold mt-2">
                   Token Name
                 </div>
               </div>
-              <TextBox
-                value={tokenName}
-                onChange={(e) => setTokenName(e.target.value)}
-                type="text"
-                placeholder="Token name"
-                maxLength={50}
-                textAlign="left"
-                width="w-2/3 md:w-1/3"
-              />
+              <div className="flex flex-col flex-1">
+                <TextBox
+                  value={tokenName}
+                  onChange={(e) => {
+                    if (e.target.value.length <= MAX_TOKEN_NAME_LENGTH) setTokenName(e.target.value);
+                  }}
+                  type="text"
+                  placeholder="Token name"
+                  maxLength={MAX_TOKEN_NAME_LENGTH}
+                  textAlign="left"
+                  width="w-2/3 md:w-1/3"
+                />
+                <span className="text-gray1 text-xs mt-1">{tokenName.length}/{MAX_TOKEN_NAME_LENGTH} characters</span>
+              </div>
             </div>
 
             <div className="flex flex-row mt-4 my-4">
