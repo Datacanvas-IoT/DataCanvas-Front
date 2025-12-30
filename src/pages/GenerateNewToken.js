@@ -132,10 +132,11 @@ const GenerateNewToken = () => {
         }
     };
 
+    const MAX_TOKEN_NAME_LENGTH = 30;
     const handleAccessTokenNameChange = (e) => {
-        const words = e.target.value.split(/\s+/).filter(word => word.length > 0);
-        if (words.length <= 30) {
-            setAccessTokenName(e.target.value);
+        const value = e.target.value;
+        if (value.length <= MAX_TOKEN_NAME_LENGTH) {
+            setAccessTokenName(value);
         }
     };
 
@@ -200,7 +201,11 @@ const GenerateNewToken = () => {
 
     const handleGenerateToken = async () => {
         if (!accessTokenName.trim()) {
-            toast.error('access token name is required');
+            toast.error('Access token name is required');
+            return;
+        }
+        if (accessTokenName.length > MAX_TOKEN_NAME_LENGTH) {
+            toast.error(`Access token name must be at most ${MAX_TOKEN_NAME_LENGTH} characters.`);
             return;
         }
 
@@ -277,7 +282,7 @@ const GenerateNewToken = () => {
     };
 
     // Count words in access token name
-    const wordCount = accessTokenName.split(/\s+/).filter(word => word.length > 0).length;
+    const charCount = accessTokenName.length;
 
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens > Generate New`}>
@@ -315,7 +320,7 @@ const GenerateNewToken = () => {
                                 className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-lg px-4 py-2 mt-1 text-gray2 resize-none focus:outline-none focus:border-green"
                             />
                             <p className="text-gray1 text-xs mt-1">
-                                {wordCount}/30 words
+                                {charCount}/{MAX_TOKEN_NAME_LENGTH} characters
                             </p>
                         </div>
                         {/* Expiration */}
