@@ -300,46 +300,48 @@ const GenerateNewToken = () => {
 
                     <div className="border-t border-gray1 border-opacity-30 mb-6"></div>
 
-                    {/* access token name */}
-                    <div className="flex flex-col mb-6">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Access Token Name <span className="text-red">*</span>
-                        </label>
-                        <textarea
-                            value={accessTokenName}
-                            onChange={handleAccessTokenNameChange}
-                            placeholder="Enter access token name"
-                            rows={3}
-                            className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-lg px-4 py-2 mt-1 text-gray2 resize-none focus:outline-none focus:border-green"
-                        />
-                        <p className="text-gray1 text-xs mt-1">
-                            {wordCount}/30 words
-                        </p>
-                    </div>
-
-                    {/* Expiration */}
-                    <div className="flex flex-col mb-6">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Expiration
-                        </label>
-                        <div className="flex items-center mt-1">
-                            <FaCalendarAlt className="text-gray2 mr-2" />
-                            <SelectBox
-                                value={expiration}
-                                onChange={handleExpirationChange}
-                                width="w-auto"
-                                mt="mt-0"
-                            >
-                                {expirationOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label} ({getExpirationDate(option.value)})
-                                    </option>
-                                ))}
-                            </SelectBox>
+                    {/* Access Token Name & Expiration in one row */}
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        {/* Access Token Name */}
+                        <div className="flex-1">
+                            <label className="text-sm text-gray2 font-semibold mb-1 block">
+                                Access Token Name <span className="text-red">*</span>
+                            </label>
+                            <textarea
+                                value={accessTokenName}
+                                onChange={handleAccessTokenNameChange}
+                                placeholder="Enter access token name"
+                                rows={2}
+                                className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-lg px-4 py-2 mt-1 text-gray2 resize-none focus:outline-none focus:border-green"
+                            />
+                            <p className="text-gray1 text-xs mt-1">
+                                {wordCount}/30 words
+                            </p>
                         </div>
-                        <p className="text-gray1 text-xs mt-1">
-                            The token will expire on the selected date
-                        </p>
+                        {/* Expiration */}
+                        <div className="flex-1">
+                            <label className="text-sm text-gray2 font-semibold mb-1 block">
+                                Expiration
+                            </label>
+                            <div className="flex items-center mt-1">
+                                <FaCalendarAlt className="text-gray2 mr-2" />
+                                <SelectBox
+                                    value={expiration}
+                                    onChange={handleExpirationChange}
+                                    width="w-auto"
+                                    mt="mt-0"
+                                >
+                                    {expirationOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label} ({getExpirationDate(option.value)})
+                                        </option>
+                                    ))}
+                                </SelectBox>
+                            </div>
+                            <p className="text-gray1 text-xs mt-1">
+                                The token will expire on the selected date
+                            </p>
+                        </div>
                     </div>
 
                     {/* Device Selection */}
