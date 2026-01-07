@@ -2,7 +2,7 @@ import React from "react";
 
 const InsightCard = ({ title, subtitle, icon: Icon, onClick, textSize, variant }) => {
     const danger = variant === 'danger';
-    const containerClasses = `w-full sm:w-[240px] h-[100px] sm:h-[110px] rounded-2xl my-1 sm:my-5 py-2 ml-5 mr-0 border relative overflow-hidden transition duration-300 ${danger ? 'bg-red bg-opacity-20 border-red hover:border-red' : 'bg-black3 border-gray1 border-opacity-60 hover:border-green'}`;
+    const containerClasses = `w-full sm:w-[280px] h-[100px] sm:h-[110px] rounded-2xl my-1 sm:my-5 py-2 ml-5 mr-0 border relative overflow-hidden transition duration-300 ${danger ? 'bg-red bg-opacity-20 border-red hover:border-red' : 'bg-black3 border-gray1 border-opacity-60 hover:border-green'}`;
     const iconClasses = `${danger ? 'text-red' : 'text-green'} text-xl`;
     return (
         <div className={containerClasses} onClick={onClick}>

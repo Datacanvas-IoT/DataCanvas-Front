@@ -279,6 +279,12 @@ const AccessTokenDetails = () => {
   const handleUpdateToken = async () => {
     if (!accessKeyId) return;
 
+    // Validate token name is not empty
+    if (!tokenName || tokenName.trim() === '') {
+      toast.error('Token name is required');
+      return;
+    }
+
     // Filter out empty domain sites
     const validDomains = domainSites.filter((s) => (s || "").trim() !== "");
     const origValidDomains = origDomainSites.filter((s) => (s || "").trim() !== "");
@@ -317,6 +323,12 @@ const AccessTokenDetails = () => {
 
     if (!hasNameChange && !hasDeviceChange && !hasDomainsChange) {
       toast.info("No changes to save");
+      return;
+    }
+
+    // Require at least one selected device to proceed
+    if (selectedDevices.length === 0) {
+      toast.error('Please select at least one device');
       return;
     }
     if (hasNameChange && tokenName.length > MAX_TOKEN_NAME_LENGTH) {
@@ -425,7 +437,7 @@ const AccessTokenDetails = () => {
             <div className="flex flex-row mt-1 my-4 items-center">
               <div className="flex flex-col w-1/4 md:w-1/6">
                 <div className="text-sm md:text-md text-gray1 font-semibold mt-2">
-                  Token Name
+                  Token Name <span className="text-red">*</span>
                 </div>
               </div>
               <div className="flex flex-col flex-1">
@@ -479,6 +491,7 @@ const AccessTokenDetails = () => {
                   text="Extend Expiration Date"
                   onClick={() => setShowRenewPopup(true)}
                   icon={FaCog}
+                  className="w-full sm:w-[280px]"
                 />
                 <RenewPopup
                   show={showRenewPopup}
@@ -501,6 +514,7 @@ const AccessTokenDetails = () => {
                 onClick={handleDeleteClick}
                 color="red"
                 icon={FaTrash}
+                className="w-full sm:w-[280px]"
               />
             </div>
           </div>
@@ -516,7 +530,7 @@ const AccessTokenDetails = () => {
 
             <div className="mx-4 mb-6 ">
               <div className="text-sm text-gray2 font-semibold mb-2">
-                Devices
+                Devices <span className="text-red">*</span>
               </div>
               <div className="space-y-2">
                 {(() => {
