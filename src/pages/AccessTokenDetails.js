@@ -406,7 +406,7 @@ const AccessTokenDetails = () => {
           </div>
 
           <div className="lg:col-span-1 flex flex-col items-stretch -mt-2">
-            <div className="w-full">
+            <div className="w-full flex justify-end">
               <InsightCard
                 title={isExpired ? "Expired" : "Active"}
                 subtitle="Current status of Token"
@@ -417,7 +417,7 @@ const AccessTokenDetails = () => {
             </div>
 
             {isExpired && (
-              <div className="mt-3 w-full mx-12">
+              <div className="mt-3 w-full flex justify-end">
                 <PillButton
                   text="Extend Expiration Date"
                   onClick={() => setShowRenewPopup(true)}
@@ -438,7 +438,7 @@ const AccessTokenDetails = () => {
               </div>
             )}
 
-            <div className="mt-3 w-full mx-12">
+            <div className="mt-3 w-full flex justify-end">
               <PillButton
                 text="Delete Access Token"
                 onClick={handleDeleteClick}
