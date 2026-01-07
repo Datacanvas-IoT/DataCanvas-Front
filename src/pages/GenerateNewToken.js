@@ -9,9 +9,13 @@ import SelectBox from '../components/input/SelectBox';
 import DeviceSelection from '../components/input/DeviceSelection';
 import DomainSitesInput from '../components/input/DomainSitesInput';
 import Spinner from '../components/Spinner';
+import TokenGeneratedPopup from '../components/TokenGeneratedPopup';
 import accessTokenService from '../services/accessTokenService';
 
 const GenerateNewToken = () => {
+    const [showTokenPopup, setShowTokenPopup] = useState(false);
+    const [clientAccessKey, setClientAccessKey] = useState('');
+    const [secretAccessKey, setSecretAccessKey] = useState('');
     const navigate = useNavigate();
     const { state } = useLocation();
 
@@ -44,9 +48,32 @@ const GenerateNewToken = () => {
     };
 
     // Validate domain format
-    const isValidDomain = (domain) => {
-        const domainRegex = /^(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}|localhost|(?:\d{1,3}\.){3}\d{1,3})(?::\d+)?$/;
-        return domainRegex.test(domain.trim());
+    /**
+     * Validates and extracts the hostname from a given origin string.
+     * Accepts http(s) URLs, domains, subdomains, IPv4, localhost, with optional ports and paths.
+     * Returns the normalized hostname (for comparison) or null if invalid.
+     *
+     * @param {string} input - The origin or domain string to validate and extract from.
+     * @returns {string|null} - The extracted hostname, or null if invalid.
+     */
+    const extractValidHostname = (input) => {
+        if (!input || typeof input !== 'string') return null;
+        let urlStr = input.trim();
+        // If input does not start with a protocol, prepend 'http://'
+        if (!/^https?:\/\//i.test(urlStr)) {
+            urlStr = 'http://' + urlStr;
+        }
+        try {
+            const url = new URL(urlStr);
+            // Accept only http or https
+            if (!['http:', 'https:'].includes(url.protocol)) return null;
+            // Hostname must be present
+            if (!url.hostname) return null;
+            // Optionally, further checks can be added here (e.g., block invalid TLDs)
+            return url.hostname.toLowerCase();
+        } catch (e) {
+            return null;
+        }
     };
 
     // Get project_id from location state
@@ -105,10 +132,11 @@ const GenerateNewToken = () => {
         }
     };
 
+    const MAX_TOKEN_NAME_LENGTH = 30;
     const handleAccessTokenNameChange = (e) => {
-        const words = e.target.value.split(/\s+/).filter(word => word.length > 0);
-        if (words.length <= 30) {
-            setAccessTokenName(e.target.value);
+        const value = e.target.value;
+        if (value.length <= MAX_TOKEN_NAME_LENGTH) {
+            setAccessTokenName(value);
         }
     };
 
@@ -173,7 +201,11 @@ const GenerateNewToken = () => {
 
     const handleGenerateToken = async () => {
         if (!accessTokenName.trim()) {
-            toast.error('access token name is required');
+            toast.error('Access token name is required');
+            return;
+        }
+        if (accessTokenName.length > MAX_TOKEN_NAME_LENGTH) {
+            toast.error(`Access token name must be at most ${MAX_TOKEN_NAME_LENGTH} characters.`);
             return;
         }
 
@@ -188,10 +220,11 @@ const GenerateNewToken = () => {
             return;
         }
 
-        // Validate domain format for each site
-        const invalidDomains = validSites.filter(site => !isValidDomain(site));
-        if (invalidDomains.length > 0) {
-            toast.error(`Invalid domain format: ${invalidDomains[0]}. Use format like example.com`);
+        // Validate and normalize domains using extractValidHostname
+        const normalizedSites = validSites.map(site => extractValidHostname(site));
+        const invalidIndex = normalizedSites.findIndex(host => !host);
+        if (invalidIndex !== -1) {
+            toast.error(`Invalid domain format: ${validSites[invalidIndex]}. Please enter a valid domain or origin.`);
             return;
         }
         //Validate for dublicate sites
@@ -212,9 +245,13 @@ const GenerateNewToken = () => {
                 valid_duration_for_access_key: expiration,
             });
 
-            if (response.status === 200 || response.status === 201) {
+            if ((response.status === 200 || response.status === 201) && response.data) {
+                // Expecting response.data to have client_access_key and secret_access_key
+                setClientAccessKey(response.data.client_access_key || '');
+                setSecretAccessKey(response.data.secret_access_key || '');
+                setShowTokenPopup(true);
+            } else {
                 toast.success('Token generated successfully!');
-                // Navigate back to access tokens list
                 setTimeout(() => {
                     navigate('/accesstoken', { state: { project_id: projectID } });
                 }, 1500);
@@ -245,10 +282,19 @@ const GenerateNewToken = () => {
     };
 
     // Count words in access token name
-    const wordCount = accessTokenName.split(/\s+/).filter(word => word.length > 0).length;
+    const charCount = accessTokenName.length;
 
     return (
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens > Generate New`}>
+            <TokenGeneratedPopup
+                isOpen={showTokenPopup}
+                onClose={() => {
+                    setShowTokenPopup(false);
+                    navigate('/accesstoken', { state: { project_id: projectID } });
+                }}
+                clientAccessKey={clientAccessKey}
+                secretAccessKey={secretAccessKey}
+            />
             {/* Token Generation Form */}
             <div className="px-7 sm:px-10 mb-28">
                 <div className="w-full">
@@ -259,46 +305,48 @@ const GenerateNewToken = () => {
 
                     <div className="border-t border-gray1 border-opacity-30 mb-6"></div>
 
-                    {/* access token name */}
-                    <div className="flex flex-col mb-6">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Access Token Name <span className="text-red">*</span>
-                        </label>
-                        <textarea
-                            value={accessTokenName}
-                            onChange={handleAccessTokenNameChange}
-                            placeholder="Enter access token name"
-                            rows={3}
-                            className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-lg px-4 py-2 mt-1 text-gray2 resize-none focus:outline-none focus:border-green"
-                        />
-                        <p className="text-gray1 text-xs mt-1">
-                            {wordCount}/30 words
-                        </p>
-                    </div>
-
-                    {/* Expiration */}
-                    <div className="flex flex-col mb-6">
-                        <label className="text-sm text-gray2 font-semibold mb-1">
-                            Expiration
-                        </label>
-                        <div className="flex items-center mt-1">
-                            <FaCalendarAlt className="text-gray2 mr-2" />
-                            <SelectBox
-                                value={expiration}
-                                onChange={handleExpirationChange}
-                                width="w-auto"
-                                mt="mt-0"
-                            >
-                                {expirationOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label} ({getExpirationDate(option.value)})
-                                    </option>
-                                ))}
-                            </SelectBox>
+                    {/* Access Token Name & Expiration in one row */}
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        {/* Access Token Name */}
+                        <div className="flex-1">
+                            <label className="text-sm text-gray2 font-semibold mb-1 block">
+                                Access Token Name <span className="text-red">*</span>
+                            </label>
+                            <textarea
+                                value={accessTokenName}
+                                onChange={handleAccessTokenNameChange}
+                                placeholder="Enter access token name"
+                                rows={2}
+                                className="w-full bg-black3 text-sm border border-gray2 border-opacity-30 rounded-lg px-4 py-2 mt-1 text-gray2 resize-none focus:outline-none focus:border-green"
+                            />
+                            <p className="text-gray1 text-xs mt-1">
+                                {charCount}/{MAX_TOKEN_NAME_LENGTH} characters
+                            </p>
                         </div>
-                        <p className="text-gray1 text-xs mt-1">
-                            The token will expire on the selected date
-                        </p>
+                        {/* Expiration */}
+                        <div className="flex-1">
+                            <label className="text-sm text-gray2 font-semibold mb-1 block">
+                                Expiration
+                            </label>
+                            <div className="flex items-center mt-1">
+                                <FaCalendarAlt className="text-gray2 mr-2" />
+                                <SelectBox
+                                    value={expiration}
+                                    onChange={handleExpirationChange}
+                                    width="w-auto"
+                                    mt="mt-0"
+                                >
+                                    {expirationOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label} ({getExpirationDate(option.value)})
+                                        </option>
+                                    ))}
+                                </SelectBox>
+                            </div>
+                            <p className="text-gray1 text-xs mt-1">
+                                The token will expire on the selected date
+                            </p>
+                        </div>
                     </div>
 
                     {/* Device Selection */}
