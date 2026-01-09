@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPlus, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const DomainSitesInput = ({ domainSites, onSiteChange, onAddSite, onRemoveSite }) => {
     const validSitesCount = domainSites.filter(site => site.trim() !== '').length;
@@ -15,23 +15,29 @@ const DomainSitesInput = ({ domainSites, onSiteChange, onAddSite, onRemoveSite }
 
             <div className="space-y-2">
                 {domainSites.map((site, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            value={site}
-                            onChange={(e) => onSiteChange(index, e.target.value)}
-                            placeholder="e.g., example.com"
-                            className="flex-1 bg-black3 text-sm border border-gray2 border-opacity-30 rounded-full px-4 py-1 text-gray2 focus:outline-none focus:border-green"
-                        />
-                        {domainSites.length > 1 && (
-                            <button
-                                onClick={() => onRemoveSite(index)}
-                                className="text-red hover:text-gray2 transition-colors p-2"
-                                title="Remove site"
-                            >
-                                <FaTimes className="text-sm" />
-                            </button>
-                        )}
+                    <div
+                        key={index}
+                        className="group w-full bg-black3 rounded-lg my-1 border border-gray1 border-opacity-60 relative overflow-hidden transition duration-300 hover:border-green hover:border-opacity-50 hover:text-green"
+                    >
+                        <div className="w-full h-full py-1 pl-6 pr-4 flex items-center justify-between gap-3">
+                            <input
+                                type="text"
+                                value={site}
+                                onChange={(e) => onSiteChange(index, e.target.value)}
+                                placeholder="e.g., example.com"
+                                className="flex-1 bg-transparent text-sm text-gray2 placeholder:text-gray1 focus:outline-none border-none"
+                            />
+                            {domainSites.length > 1 && (
+                                <button
+                                    onClick={() => onRemoveSite(index)}
+                                    className="flex items-center gap-1 text-gray1 group-hover:text-green transition-colors"
+                                    title="Remove site"
+                                >
+                                    <span className="text-sm">Remove</span>
+                                    <FaTrash className="text-sm text-green" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
