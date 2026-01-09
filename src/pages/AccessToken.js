@@ -146,7 +146,7 @@ const AccessToken = () => {
         <SidebarLayout active={6} breadcrumb={`${localStorage.getItem('project')} > Access Tokens`}>
             {/* Heading and Add Button */}
             <div className="flex flex-row justify-between px-7 sm:px-10 mt-8 sm:mt-3">
-                <div className="text-lg text-gray2 font-semibold">Your Access Tokens</div>
+                <div className="text-lg text-gray2 font-semibold">Existing Access Tokens</div>
                 <div className="flex gap-3">
                     {accessTokens.length > 0 && (
                         <PillButton

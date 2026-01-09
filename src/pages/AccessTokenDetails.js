@@ -491,7 +491,7 @@ const AccessTokenDetails = () => {
                   text="Extend Expiration Date"
                   onClick={() => setShowRenewPopup(true)}
                   icon={FaCog}
-                  className="w-full sm:w-[280px]"
+                  className="w-full sm:w-[280px] justify-center"
                 />
                 <RenewPopup
                   show={showRenewPopup}
@@ -514,7 +514,7 @@ const AccessTokenDetails = () => {
                 onClick={handleDeleteClick}
                 color="red"
                 icon={FaTrash}
-                className="w-full sm:w-[280px]"
+                className="w-full sm:w-[280px] justify-center"
               />
             </div>
           </div>
