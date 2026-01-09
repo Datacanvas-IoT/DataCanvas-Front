@@ -81,6 +81,30 @@ const AccessTokenDetails = () => {
   const [origExpirationDate, setOrigExpirationDate] = useState(null);
   const [origSelectedDevices, setOrigSelectedDevices] = useState([]);
   const [origDomainSites, setOrigDomainSites] = useState([""]);
+  // Validate domain format (same as GenerateNewToken)
+  /**
+   * Validates and extracts the hostname from a given origin string.
+   * Accepts http(s) URLs, domains, subdomains, IPv4, localhost, with optional ports and paths.
+   * Returns the normalized hostname (for comparison) or null if invalid.
+   *
+   * @param {string} input - The origin or domain string to validate and extract from.
+   * @returns {string|null} - The extracted hostname, or null if invalid.
+   */
+  const extractValidHostname = (input) => {
+    if (!input || typeof input !== 'string') return null;
+    let urlStr = input.trim();
+    if (!/^https?:\/\//i.test(urlStr)) {
+      urlStr = 'http://' + urlStr;
+    }
+    try {
+      const url = new URL(urlStr);
+      if (!['http:', 'https:'].includes(url.protocol)) return null;
+      if (!url.hostname) return null;
+      return url.hostname.toLowerCase();
+    } catch (e) {
+      return null;
+    }
+  };
 
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
@@ -188,11 +212,23 @@ const AccessTokenDetails = () => {
   };
 
   const handleAddSite = () => {
-    setDomainSites((prev) => [...prev, ""]);
+    setDomainSites((prev) => {
+      if ((prev[prev.length - 1] || '').trim() === '') {
+        toast.error('Please enter a site name before adding another');
+        return prev;
+      }
+      return [...prev, ""];
+    });
   };
 
   const handleRemoveSite = (index) => {
-    setDomainSites((prev) => prev.filter((_, i) => i !== index));
+    setDomainSites((prev) => {
+      if (prev.length === 1) {
+        toast.error('At least one site is required');
+        return prev;
+      }
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const handleRemoveDevice = (deviceId) => {
@@ -243,6 +279,12 @@ const AccessTokenDetails = () => {
   const handleUpdateToken = async () => {
     if (!accessKeyId) return;
 
+    // Validate token name is not empty
+    if (!tokenName || tokenName.trim() === '') {
+      toast.error('Token name is required');
+      return;
+    }
+
     // Filter out empty domain sites
     const validDomains = domainSites.filter((s) => (s || "").trim() !== "");
     const origValidDomains = origDomainSites.filter((s) => (s || "").trim() !== "");
@@ -258,8 +300,35 @@ const AccessTokenDetails = () => {
       validDomains.length !== origValidDomains.length ||
       validDomains.some((domain) => !origValidDomains.includes(domain));
 
+    if (hasDomainsChange) {
+      // Require at least one domain
+      if (validDomains.length === 0) {
+        toast.error('Please add at least one domain site');
+        return;
+      }
+      // Validate and normalize domains using extractValidHostname
+      const normalizedSites = validDomains.map(site => extractValidHostname(site));
+      const invalidIndex = normalizedSites.findIndex(host => !host);
+      if (invalidIndex !== -1) {
+        toast.error(`Invalid domain format: ${validDomains[invalidIndex]}. Please enter a valid domain or origin.`);
+        return;
+      }
+      // Validate for duplicate sites
+      const uniqueSites = [...new Set(validDomains)];
+      if (uniqueSites.length !== validDomains.length) {
+        toast.error('Duplicate domains detected. Please remove duplicates.');
+        return;
+      }
+    }
+
     if (!hasNameChange && !hasDeviceChange && !hasDomainsChange) {
       toast.info("No changes to save");
+      return;
+    }
+
+    // Require at least one selected device to proceed
+    if (selectedDevices.length === 0) {
+      toast.error('Please select at least one device');
       return;
     }
     if (hasNameChange && tokenName.length > MAX_TOKEN_NAME_LENGTH) {
@@ -368,7 +437,7 @@ const AccessTokenDetails = () => {
             <div className="flex flex-row mt-1 my-4 items-center">
               <div className="flex flex-col w-1/4 md:w-1/6">
                 <div className="text-sm md:text-md text-gray1 font-semibold mt-2">
-                  Token Name
+                  Token Name <span className="text-red">*</span>
                 </div>
               </div>
               <div className="flex flex-col flex-1">
@@ -406,7 +475,7 @@ const AccessTokenDetails = () => {
           </div>
 
           <div className="lg:col-span-1 flex flex-col items-stretch -mt-2">
-            <div className="w-full">
+            <div className="w-full flex justify-end">
               <InsightCard
                 title={isExpired ? "Expired" : "Active"}
                 subtitle="Current status of Token"
@@ -417,11 +486,12 @@ const AccessTokenDetails = () => {
             </div>
 
             {isExpired && (
-              <div className="mt-3 w-full mx-12">
+              <div className="mt-3 w-full flex justify-end">
                 <PillButton
                   text="Extend Expiration Date"
                   onClick={() => setShowRenewPopup(true)}
                   icon={FaCog}
+                  className="w-full sm:w-[280px] justify-center"
                 />
                 <RenewPopup
                   show={showRenewPopup}
@@ -438,12 +508,13 @@ const AccessTokenDetails = () => {
               </div>
             )}
 
-            <div className="mt-3 w-full mx-12">
+            <div className="mt-3 w-full flex justify-end">
               <PillButton
                 text="Delete Access Token"
                 onClick={handleDeleteClick}
                 color="red"
                 icon={FaTrash}
+                className="w-full sm:w-[280px] justify-center"
               />
             </div>
           </div>
@@ -459,7 +530,7 @@ const AccessTokenDetails = () => {
 
             <div className="mx-4 mb-6 ">
               <div className="text-sm text-gray2 font-semibold mb-2">
-                Devices
+                Devices <span className="text-red">*</span>
               </div>
               <div className="space-y-2">
                 {(() => {
