@@ -12,6 +12,7 @@ import ColumnVisibilityControl from "../components/ColumnVisibilityControl";
 import FilterPopup from "../components/FilterPopup";
 import axios from "axios";
 import './../styles/scrollbar.css';
+import config from "../config";
 
 function DatasetViewer() {
     // ---------- Navigation hooks ----------
@@ -112,7 +113,7 @@ function DatasetViewer() {
     const getDataTypes = async (token) => {
         try {
             setLoading(true);
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/config/type/`, {
+            const res = await axios.get(`${config.REACT_APP_API_URL}/data/config/type/`, {
                 headers: {
                     'authorization': token
                 }
@@ -139,7 +140,7 @@ function DatasetViewer() {
     const getConstraints = async (token) => {
         try {
             setLoading(true);
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/config/constraint/`, {
+            const res = await axios.get(`${config.REACT_APP_API_URL}/data/config/constraint/`, {
                 headers: {
                     'authorization': token
                 }
@@ -168,7 +169,7 @@ function DatasetViewer() {
             setLoading(true);
             // ---------- Get auth-token from local storage ----------
             const token = localStorage.getItem('auth-token');
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/tbl/` + tblID, {
+            const res = await axios.get(`${config.REACT_APP_API_URL}/data/tbl/` + tblID, {
                 headers: {
                     'authorization': token
                 }
@@ -197,7 +198,7 @@ function DatasetViewer() {
             setLoading(true);
             // ---------- Get auth-token from local storage ----------
             const token = localStorage.getItem('auth-token');
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/clm?tbl_id=` + tblID, {
+            const res = await axios.get(`${config.REACT_APP_API_URL}/data/clm?tbl_id=` + tblID, {
                 headers: {
                     'authorization': token
                 }
@@ -234,7 +235,7 @@ function DatasetViewer() {
             setLoading(true);
             // ---------- Get auth-token from local storage ----------
             const token = localStorage.getItem('auth-token');
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/count/?tbl_id=${tblID}`, {
+            const res = await axios.get(`${config.REACT_APP_API_URL}/data/get/count/?tbl_id=${tblID}`, {
                 headers: {
                     'authorization': token
                 }
@@ -271,7 +272,7 @@ function DatasetViewer() {
             setLoading(true);
             // ---------- Get auth-token from local storage ----------
             const token = localStorage.getItem('auth-token');
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/all/?tbl_id=${tblID}&limit=${dataRetrievalLimit}&offset=${dataRetrievalOffset}&order=${orderFilter}`, {
+            const res = await axios.get(`${config.REACT_APP_API_URL}/data/get/all/?tbl_id=${tblID}&limit=${dataRetrievalLimit}&offset=${dataRetrievalOffset}&order=${orderFilter}`, {
                 headers: {
                     'authorization': token
                 }

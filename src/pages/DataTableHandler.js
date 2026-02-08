@@ -10,6 +10,7 @@ import Spinner from "../components/Spinner";
 import RectangularCard from "../components/cards/RectangularCard";
 import axios from "axios";
 import PopupContainer from "../components/PopupContainer";
+import config from "../config";
 
 
 const DataTableHandler = () => {
@@ -104,7 +105,7 @@ const DataTableHandler = () => {
 
         // Post request to localhost:3001/api/data/tbl?project_id=<project_id> to post new data table
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/data/tbl`, {
+            const response = await axios.post(`${config.REACT_APP_API_URL}/data/tbl`, {
                 project_id: projectID,
                 tbl_name: newTableName
             },
@@ -155,7 +156,7 @@ const DataTableHandler = () => {
         setLoading(true);
         // Get request to localhost:3001/api/data/tbl?project_id=<project_id> to get data tables
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/tbl?project_id=${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/tbl?project_id=${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }

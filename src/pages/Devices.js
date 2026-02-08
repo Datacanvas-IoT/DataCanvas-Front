@@ -13,6 +13,7 @@ import PillButton from "../components/input/PillButton";
 import axios from "axios";
 import PopupContainer from "../components/PopupContainer";
 import LoginPopup from "../components/LoginPopup";
+import config from "../config";
 
 const Device = () => {
   //------ Navigations -------
@@ -111,7 +112,7 @@ const Device = () => {
     // post request to localhost:3001/api/device
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/device`,
+        `${config.REACT_APP_API_URL}/device`,
         {
           device_name: newDeviceName,
           description: newDeviceDescription,
@@ -162,7 +163,7 @@ const Device = () => {
     setLoading(true);
     // delete request to localhost:3001/api/device
     try {
-      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/device`, {
+      const response = await axios.delete(`${config.REACT_APP_API_URL}/device`, {
         headers: {
           authorization: localStorage.getItem("auth-token"),
         },
@@ -210,7 +211,7 @@ const Device = () => {
     // put request to localhost:3001/api/device
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/device`,
+        `${config.REACT_APP_API_URL}/device`,
         {
           device_id: device_id,
           device_name: newDeviceName,
@@ -260,7 +261,7 @@ const Device = () => {
     // get request to localhost:3001/api/device?project_id=<projectID>
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/device?project_id=${projectID}`,
+        `${config.REACT_APP_API_URL}/device?project_id=${projectID}`,
         {
           headers: {
             authorization: localStorage.getItem("auth-token"),

@@ -7,6 +7,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import SearchResults from '../SearchResults';
 import { firebaseGetFileURL } from '../../services/storageService';
+import config from "../../config";
 
 const Topbar = ({ searchBarDisplayed, sideBarButtonDisplayed, isSidebarOpen, toggleSidebar, breadcrumb }) => {
     // ---------- Navigation ----------
@@ -118,7 +119,7 @@ const Topbar = ({ searchBarDisplayed, sideBarButtonDisplayed, isSidebarOpen, tog
     /*
         * Implement search function
         * Validate if the search keyword is empty
-        * API Endpoint : ${process.env.REACT_APP_API_URL}/data/get/search?keyword={searchKeyword}&user_id={uid}
+        * API Endpoint : ${config.REACT_APP_API_URL}/data/get/search?keyword={searchKeyword}&user_id={uid}
         * Method : GET
         * Get uid from localStorage
         * If uid is empty or it is null, do not search and show a toast as Something Went Wrong
@@ -145,7 +146,7 @@ const Topbar = ({ searchBarDisplayed, sideBarButtonDisplayed, isSidebarOpen, tog
         setLoading(true);
         console.log('searching for', keyword, uid);
         try {
-            const url = `${process.env.REACT_APP_API_URL}/data/get/search?keyword=${keyword}&project_id=${projectID}`;
+            const url = `${config.REACT_APP_API_URL}/data/get/search?keyword=${keyword}&project_id=${projectID}`;
             const response = await axios.get(url,
                 {
                     headers: {

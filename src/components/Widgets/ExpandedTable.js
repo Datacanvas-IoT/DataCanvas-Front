@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from "axios";
 import Pagination from './../Pagination';
+import config from "../../config";
 
 export default function ExpandedTable({ widget, setLoading, navigate }) {
 
@@ -55,7 +56,7 @@ export default function ExpandedTable({ widget, setLoading, navigate }) {
 
         try {
             setLoading(true);
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/table?widget_id=${widget.id}&offset=${page}&limit=${limit}`,
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/get/table?widget_id=${widget.id}&offset=${page}&limit=${limit}`,
                 {
                     headers: {
                         "authorization": localStorage.getItem("auth-token")

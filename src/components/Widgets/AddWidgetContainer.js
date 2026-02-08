@@ -7,6 +7,7 @@ import AddToggleWidgetPopup from "./AddToggleWidgetPopup";
 import AddGaugeWidgetPopup from "./AddGaugeWidgetPopup";
 import AddMetricWidgetPopup from "./AddMetricWidgetPopup";
 import axios from "axios";
+import config from "../../config";
 
 const AddWidgetContainer = ({
     isOpen,
@@ -75,7 +76,7 @@ const AddWidgetContainer = ({
         return new Promise((resolve, reject) => {
             setLoading(true);
             const token = localStorage.getItem('auth-token');
-            axios.get(`${process.env.REACT_APP_API_URL}/data/clm?tbl_id=` + tbl_id, {
+            axios.get(`${config.REACT_APP_API_URL}/data/clm?tbl_id=` + tbl_id, {
                 headers: {
                     'authorization': token
                 }
@@ -117,7 +118,7 @@ const AddWidgetContainer = ({
         setLoading(true);
         try {
             const token = localStorage.getItem('auth-token');
-            let response = await axios.post(`${process.env.REACT_APP_API_URL}/widget`,
+            let response = await axios.post(`${config.REACT_APP_API_URL}/widget`,
                 {
                     widget_name: widgetName,
                     widget_type: widgetType,
@@ -153,7 +154,7 @@ const AddWidgetContainer = ({
     }
 
     /*
-        * API Endpoint: ${process.env.REACT_APP_API_URL}/widget
+        * API Endpoint: ${config.REACT_APP_API_URL}/widget
         * Method: PUT
         * Function to update the widget
         * @param {Object} configuration - Configuration of the widget
@@ -173,7 +174,7 @@ const AddWidgetContainer = ({
         setLoading(true);
         try {
             const token = localStorage.getItem('auth-token');
-            let response = await axios.put(`${process.env.REACT_APP_API_URL}/widget`,
+            let response = await axios.put(`${config.REACT_APP_API_URL}/widget`,
                 {
                     widget_id: selectedWidget.id,
                     widget_name: widgetName,

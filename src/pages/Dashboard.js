@@ -16,6 +16,7 @@ import DashboardGaugeCard from '../components/cards/DashboardGaugeCard';
 import DashboardMetricCard from '../components/cards/DashboardMetricCard';
 import DeleteWidgetPopup from '../components/Widgets/DeleteWidgetPopup';
 import ShareDashboardPopup from '../components/ShareDashboardPopup';
+import config from "../config";
 
 function Dashboard() {
     // ---------- Get states from navigation location for retrieval of project_id ----------
@@ -127,7 +128,7 @@ function Dashboard() {
 
         // Get request to localhost:3001/api/project/<project_id> to get project details
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/project/${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/project/${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }
@@ -169,7 +170,7 @@ function Dashboard() {
         setLoading(true);
         // Get request to localhost:3001/api/data/tbl?project_id=<project_id> to get data tables
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/tbl?project_id=${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/tbl?project_id=${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }
@@ -220,7 +221,7 @@ function Dashboard() {
         // get request to localhost:3001/api/device?project_id=<projectID>
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/device?project_id=${projectID}`,
+                `${config.REACT_APP_API_URL}/device?project_id=${projectID}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),
@@ -269,7 +270,7 @@ function Dashboard() {
         // get request to localhost:3001/api/widget?project_id=<projectID>
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/widget?project_id=${projectID}`,
+                `${config.REACT_APP_API_URL}/widget?project_id=${projectID}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),
@@ -306,7 +307,7 @@ function Dashboard() {
 
     /*
         * Delete widget function
-        * API Endpoint : ${process.env.REACT_APP_API_URL}/widget
+        * API Endpoint : ${config.REACT_APP_API_URL}/widget
         * Method : DELETE
         * Request Body : {
         *   widget_id: <widget_id>

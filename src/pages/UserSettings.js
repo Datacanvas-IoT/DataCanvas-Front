@@ -13,6 +13,7 @@ import PillButton from "../components/input/PillButton";
 import LoginPopup from "../components/LoginPopup";
 import storageService from "../services/storageService";
 import { firebaseImageUpload, firebaseGetFileURL } from "../services/storageService";
+import config from "../config";
 
 function UserSettings() {
     // navigation hooks
@@ -107,7 +108,7 @@ function UserSettings() {
 
         // Construct the URL with the email parameter
         const email = localStorage.getItem('email');
-        const url = `${process.env.REACT_APP_API_URL}/user/?email=${email}`;
+        const url = `${config.REACT_APP_API_URL}/user/?email=${email}`;
 
         // Make the GET request to retrieve the user details
         axios.get(url)
@@ -162,7 +163,7 @@ function UserSettings() {
             user_name: name,
         }
 
-        axios.put(`${process.env.REACT_APP_API_URL}/user`, requestBody)
+        axios.put(`${config.REACT_APP_API_URL}/user`, requestBody)
             .then(response => {
                 toast.success('User details updated successfully');
             })

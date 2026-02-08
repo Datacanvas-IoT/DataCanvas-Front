@@ -10,6 +10,7 @@ import Spinner from "../components/Spinner";
 import axios from "axios";
 import CriticalAction from "../components/CriticalAction";
 import LoginPopup from "../components/LoginPopup";
+import config from "../config";
 
 
 function ProjectSettings() {
@@ -78,7 +79,7 @@ function ProjectSettings() {
 
         // Get request to localhost:3001/api/project/<project_id> to get project details
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/project/${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/project/${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }
@@ -129,7 +130,7 @@ function ProjectSettings() {
         // put request to localhost:3001/api/project
         try {
             const response = await axios.put(
-                `${process.env.REACT_APP_API_URL}/project`,
+                `${config.REACT_APP_API_URL}/project`,
                 {
                     project_id: project_id,
                     project_name: projectName,
@@ -176,7 +177,7 @@ function ProjectSettings() {
         setLoading(true);
         // delete request to localhost:3001/api/device/all
         try {
-            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/device/all`, {
+            const response = await axios.delete(`${config.REACT_APP_API_URL}/device/all`, {
                 headers: {
                     authorization: localStorage.getItem("auth-token"),
                 },
@@ -216,7 +217,7 @@ function ProjectSettings() {
         setLoading(true);
         // delete request to localhost:3001/api/table/all
         try {
-            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/data/tbl/all`, {
+            const response = await axios.delete(`${config.REACT_APP_API_URL}/data/tbl/all`, {
                 headers: {
                     authorization: localStorage.getItem("auth-token"),
                 },
@@ -253,7 +254,7 @@ function ProjectSettings() {
 
     //--API call for deleting all data
     /*
-        * API endpoint : ${process.env.REACT_APP_API_URL}/data/tbl/truncateall
+        * API endpoint : ${config.REACT_APP_API_URL}/data/tbl/truncateall
         * Method : POST
         * Request body : { project_id: <project_id> }
         * Response : 
@@ -267,7 +268,7 @@ function ProjectSettings() {
     const handleDeleteData = async (project_id) => {
         setLoading(true);
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/data/tbl/truncateall`, { project_id }, {
+            const response = await axios.post(`${config.REACT_APP_API_URL}/data/tbl/truncateall`, { project_id }, {
                 headers: {
                     authorization: localStorage.getItem("auth-token"),
                 }
@@ -307,7 +308,7 @@ function ProjectSettings() {
         setLoading(true);
         // delete request to localhost:3001/api/project
         try {
-            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/project`, {
+            const response = await axios.delete(`${config.REACT_APP_API_URL}/project`, {
                 headers: {
                     authorization: localStorage.getItem("auth-token"),
                 },

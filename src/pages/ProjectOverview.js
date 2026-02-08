@@ -9,6 +9,7 @@ import Spinner from "../components/Spinner";
 import InsightCard from "../components/cards/InsightCard";
 import RectangularCard from "../components/cards/RectangularCard";
 import axios from "axios";
+import config from "../config";
 
 function ProjectOverview() {
     // ---------- Navigation hooks ----------
@@ -74,7 +75,7 @@ function ProjectOverview() {
         setLoading(true);
         // Get request to localhost:3001/api/project/<project_id> to get project details
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/project/${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/project/${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }
@@ -125,7 +126,7 @@ function ProjectOverview() {
 
         // Get request to localhost:3001/api/device?project_id=<project_id> to get devices
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/device?project_id=${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/device?project_id=${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }
@@ -180,7 +181,7 @@ function ProjectOverview() {
         setLoading(true);
         // Get request to localhost:3001/api/data/tbl?project_id=<project_id> to get data tables
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/tbl?project_id=${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/tbl?project_id=${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }
@@ -240,7 +241,7 @@ function ProjectOverview() {
         */
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/count/project/?project_id=${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/get/count/project/?project_id=${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }
@@ -283,7 +284,7 @@ function ProjectOverview() {
         */
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/latest/project/?project_id=${projectID}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/get/latest/project/?project_id=${projectID}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }

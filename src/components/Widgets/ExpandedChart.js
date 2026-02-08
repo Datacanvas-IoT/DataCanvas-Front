@@ -8,6 +8,7 @@ import { enUS } from 'date-fns/locale';
 import ButtonRectangle from '../input/ButtonRectangle';
 import TextBox from '../input/TextBox';
 import SelectBox from '../input/SelectBox';
+import config from "../../config";
 // ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, RadarController, RadialLinearScale, Title, Tooltip);
 ChartJS.register(...registerables);
 
@@ -121,7 +122,7 @@ export default function ExpandedChart({ widget, setLoading = () => { }, navigate
 
     /*
         * This function loads chart data from the server.
-        * ENDPOINT: ${process.env.REACT_APP_API_URL}/data/get/chart/<widget.id>.
+        * ENDPOINT: ${config.REACT_APP_API_URL}/data/get/chart/<widget.id>.
         * METHOD: GET,
         * Headers: localStorage.getItem(auth-token)
     */
@@ -135,7 +136,7 @@ export default function ExpandedChart({ widget, setLoading = () => { }, navigate
         setLoading(true);
 
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/chart/${widget.id}?recordLimit=${recordLimit}`, {
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/get/chart/${widget.id}?recordLimit=${recordLimit}`, {
                 headers: {
                     'authorization': localStorage.getItem('auth-token')
                 }

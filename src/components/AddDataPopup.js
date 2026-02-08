@@ -7,6 +7,7 @@ import SelectBox from "./input/SelectBox";
 import { toast } from 'react-toastify';
 import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
+import config from "../config";
 
 const AddDataPopup = ({ isOpen, closeFunction, columns, projectID, tblName, setLoading }) => {
     const [devices, setDevices] = useState([]);
@@ -124,7 +125,7 @@ const AddDataPopup = ({ isOpen, closeFunction, columns, projectID, tblName, setL
         // post request to localhost:3001/api/data/feed/insert
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/data/feed/insert`,
+                `${config.REACT_APP_API_URL}/data/feed/insert`,
                 requestBody,
             );
 
@@ -161,7 +162,7 @@ const AddDataPopup = ({ isOpen, closeFunction, columns, projectID, tblName, setL
         // get request to localhost:3001/api/device?project_id=<projectID>
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/device?project_id=${projectID}`,
+                `${config.REACT_APP_API_URL}/device?project_id=${projectID}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),

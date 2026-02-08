@@ -10,6 +10,7 @@ import Spinner from "../components/Spinner";
 import axios from 'axios';
 import app from "../firebase";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import config from "../config";
 
 
 function ForgotPassword() {
@@ -36,8 +37,8 @@ function ForgotPassword() {
       }
 
       setLoading(true);
-      // const response = await axios.get(`${process.env.REACT_APP_API_URL}/user?email=${email}`);
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/user?email=` + email);
+      // const response = await axios.get(`${config.REACT_APP_API_URL}/user?email=${email}`);
+      const response = await axios.get(`${config.REACT_APP_API_URL}/user?email=` + email);
 
       if (response.status === 200) {
         authEmail(email);

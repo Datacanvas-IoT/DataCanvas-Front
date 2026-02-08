@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import GaugeComponent from "react-gauge-component";
 import axios from "axios";
 import { ScaleLoader } from "react-spinners";
+import config from "../../config";
 
 const DashboardGaugeCard = ({
   onClick = () => { },
@@ -70,7 +71,7 @@ const DashboardGaugeCard = ({
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/data/get/gauge/${gaugeId}`,
+        `${config.REACT_APP_API_URL}/data/get/gauge/${gaugeId}`,
         {
           headers: {
             Authorization: localStorage.getItem('auth-token')

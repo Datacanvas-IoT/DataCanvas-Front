@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import PopupContainer from "../PopupContainer";
 import PillButton from "../input/PillButton";
 import axios from "axios";
+import config from "../../config";
 
 const DeleteWidgetPopup = ({
     widget,
@@ -18,7 +19,7 @@ const DeleteWidgetPopup = ({
         setLoading(true);
         try {
             const response = await axios.delete(
-                `${process.env.REACT_APP_API_URL}/widget`,
+                `${config.REACT_APP_API_URL}/widget`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),

@@ -9,6 +9,7 @@ import ButtonRectangle from "../components/input/ButtonRectangle";
 import TextBox from "../components/input/TextBox";
 import Spinner from "../components/Spinner";
 import axios from "axios";
+import config from "../config";
 
 
 function Login() {
@@ -133,7 +134,7 @@ function Login() {
         }
 
         try {
-            const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, {
+            const result = await axios.post(`${config.REACT_APP_API_URL}/auth/login`, {
                 email: email,
                 access_token: accessToken,
             });

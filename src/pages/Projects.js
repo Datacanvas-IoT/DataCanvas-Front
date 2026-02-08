@@ -10,6 +10,7 @@ import SquareCard from "../components/cards/SquareCard";
 import PopupContainer from "../components/PopupContainer";
 import Spinner from "../components/Spinner";
 import axios from "axios";
+import config from "../config";
 
 function Projects() {
   // ---------- Navigation ----------
@@ -64,7 +65,7 @@ function Projects() {
     try {
       // Send an get API request with authorization headers
       const result = await axios.get(
-        `${process.env.REACT_APP_API_URL}/project?user_id=` + userID,
+        `${config.REACT_APP_API_URL}/project?user_id=` + userID,
         {
           headers: {
             authorization: token,
@@ -118,7 +119,7 @@ function Projects() {
     try {
       // Send an post API request with authorization headers
       const result = await axios.post(
-        `${process.env.REACT_APP_API_URL}/project/`,
+        `${config.REACT_APP_API_URL}/project/`,
         {
           project_name: newProjectName,
           description: newProjectDescription,

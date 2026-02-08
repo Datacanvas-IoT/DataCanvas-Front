@@ -5,6 +5,7 @@ import Switch from "react-switch";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { ScaleLoader } from "react-spinners";
+import config from "../../config";
 
 const DashboardToggleCard = ({
     onClick = () => { },
@@ -47,7 +48,7 @@ const DashboardToggleCard = ({
     const loadToggleData = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/data/get/toggle/${widget.id}`,
+            const response = await axios.get(`${config.REACT_APP_API_URL}/data/get/toggle/${widget.id}`,
                 {
                     headers: {
                         Authorization: localStorage.getItem('auth-token')
@@ -81,7 +82,7 @@ const DashboardToggleCard = ({
     const updateToggleState = async (status) => {
         setLoading(true);
         try {
-            const response = await axios.put(`${process.env.REACT_APP_API_URL}/data/feed/update/toggle`,
+            const response = await axios.put(`${config.REACT_APP_API_URL}/data/feed/update/toggle`,
                 {
                     widget_id: widget.id,
                     new_value: status

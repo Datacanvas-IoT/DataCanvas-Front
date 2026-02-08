@@ -7,6 +7,7 @@ import { ScaleLoader } from "react-spinners";
 import SelectBox from "../input/SelectBox";
 import TextBox from "../input/TextBox";
 import axios from "axios";
+import config from "../../config";
 
 const DashboardAnalyticsCard = ({
     widget,
@@ -38,7 +39,7 @@ const DashboardAnalyticsCard = ({
         setRefreshing(true);
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/data/get/analytic-widget/${widget.id}?filterMethod=${Number(filterType)}&filterValue=${Number(filterValue)}`,
+                `${config.REACT_APP_API_URL}/data/get/analytic-widget/${widget.id}?filterMethod=${Number(filterType)}&filterValue=${Number(filterValue)}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),

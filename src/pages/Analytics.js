@@ -11,6 +11,7 @@ import AddAnalyticsWidgetPopup from "../components/Widgets/AddAnalyticsWidgetPop
 import DashboardAnalyticsCard from "../components/cards/DashboardAnalyticsCard";
 import AskAssistantPopup from "../components/AskAssistantPopup";
 import axios from "axios";
+import config from "../config";
 
 export default function Analytics() {
     // ---------- Get states from navigation location for retrieval of project_id ----------
@@ -94,7 +95,7 @@ export default function Analytics() {
         // get request to localhost:3001/api/data/clm?project_id=<projectID>
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/data/clm/project/${projectID}`,
+                `${config.REACT_APP_API_URL}/data/clm/project/${projectID}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),
@@ -160,7 +161,7 @@ export default function Analytics() {
         // get request to localhost:3001/api/device?project_id=<projectID>
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/device?project_id=${projectID}`,
+                `${config.REACT_APP_API_URL}/device?project_id=${projectID}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),
@@ -211,7 +212,7 @@ export default function Analytics() {
         // get request to localhost:3001/api/widget?project_id=<projectID>
         try {
             const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/analytic_widget?project=${projectID}`,
+                `${config.REACT_APP_API_URL}/analytic_widget?project=${projectID}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),
@@ -257,7 +258,7 @@ export default function Analytics() {
             let response;
             if (widget.widget_id == null) {
                 response = await axios.post(
-                    `${process.env.REACT_APP_API_URL}/analytic_widget`,
+                    `${config.REACT_APP_API_URL}/analytic_widget`,
                     widget,
                     {
                         headers: {
@@ -267,7 +268,7 @@ export default function Analytics() {
                 );
             } else {
                 response = await axios.put(
-                    `${process.env.REACT_APP_API_URL}/analytic_widget`,
+                    `${config.REACT_APP_API_URL}/analytic_widget`,
                     widget,
                     {
                         headers: {
@@ -318,7 +319,7 @@ export default function Analytics() {
 
         try {
             const response = await axios.delete(
-                `${process.env.REACT_APP_API_URL}/analytic_widget/${widget.id}`,
+                `${config.REACT_APP_API_URL}/analytic_widget/${widget.id}`,
                 {
                     headers: {
                         authorization: localStorage.getItem("auth-token"),

@@ -3,6 +3,7 @@ import { FaTrash, FaPencilAlt, FaHashtag } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { ScaleLoader } from "react-spinners";
+import config from "../../config";
 
 const DashboardMetricCard = ({
   onClick = () => {},
@@ -60,7 +61,7 @@ const DashboardMetricCard = ({
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/data/get/metric/${metricId}`,
+        `${config.REACT_APP_API_URL}/data/get/metric/${metricId}`,
         {
           headers: {
             Authorization: localStorage.getItem("auth-token"),

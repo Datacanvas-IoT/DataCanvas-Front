@@ -13,16 +13,6 @@ RUN npm install --legacy-peer-deps
 # Copy application source
 COPY . .
 
-# Build arguments for environment variables
-ARG REACT_APP_API_URL
-ARG REACT_APP_OPENAPI_KEY
-ARG REACT_APP_ANALYTICS_API_URL
-
-# Set environment variables from build args
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
-ENV REACT_APP_OPENAPI_KEY=$REACT_APP_OPENAPI_KEY
-ENV REACT_APP_ANALYTICS_API_URL=$REACT_APP_ANALYTICS_API_URL
-
 # Build the application
 RUN npm run build
 
@@ -38,6 +28,10 @@ WORKDIR /app
 # Copy built assets from builder stage
 COPY --from=builder /app/build ./build
 
+# Copy the runtime env injection script
+COPY env.sh /app/env.sh
+RUN chmod +x /app/env.sh
+
 # Expose port 3000
 EXPOSE 3000
 
@@ -45,5 +39,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-# Start the application with serve
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Start with env.sh which injects env vars then starts serve
+CMD ["/bin/sh", "/app/env.sh"]

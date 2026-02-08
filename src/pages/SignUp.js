@@ -9,6 +9,7 @@ import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, GoogleA
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
+import config from "../config";
 
 function SignUp() {
     const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ function SignUp() {
 
     const auth = getAuth();
 
-    const API_URL = `${process.env.REACT_APP_API_URL}/user`
+    const API_URL = `${config.REACT_APP_API_URL}/user`
 
     const handleSignup = (e) => {
         e.preventDefault();
