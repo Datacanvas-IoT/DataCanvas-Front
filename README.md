@@ -1,7 +1,7 @@
 # DataCanvas Frontend
 
 DataCanvas is a web application for visualizing and analyzing IoT sensor data. This repository contains the frontend code, which is built using React.
-You can access the live application at [datacanvas.hypercube.lk](http://datacanvas.hypercube.lk).
+You can access the live application at [datacanvas.hypercube.lk](https://datacanvas.hypercube.lk).
 
 ## Table of Contents
 
